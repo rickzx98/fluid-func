@@ -258,7 +258,7 @@ If you want to have something to do before runing the Func use the func.onBefore
 
 ```javascript
 
-    new FluidChain('_1stFunc', function(parameter) {
+    new FluidFunc('_1stFunc', function(parameter) {
 
     })
     .onBefore(function(paramater){
@@ -272,7 +272,7 @@ Using promises.
 
 ```javascript
 
-    new FluidChain('_1stFunc', function(parameter) {
+    new FluidFunc('_1stFunc', function(parameter) {
         // do some func thingy here
     })
     .onBefore(function(paramater){
@@ -292,7 +292,7 @@ A way to handle error or breakage in Func process. In this you have options to r
 
 ```javascript
 
-    new FluidChain('_1stFunc', function(parameter) {
+    new FluidFunc('_1stFunc', function(parameter) {
         // do some func thingy here
     })
     .onFail(function(error, retry, reject){

@@ -449,3 +449,21 @@ currentValue| Has the current value of the parameter
         email: 'john.doe@email.com'
     });
 ```
+
+### Reducer
+
+To make the Func act as reducer use func.reduce(${fieldToReduce})
+
+```javascript
+
+        new FluidFunc('_1stFunc', (parameter, current, index) => {
+            return current + (parameter.value ? parameter.value() : 0);
+        }).reduce('sampleArray');
+
+        FluidFunc.start('_1stFunc', { sampleArray: [1, 2, 3, 4, 5] })
+            .then(result => {
+                //expect(result.value()).to.be.equal(15);
+            });
+```
+
+

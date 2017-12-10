@@ -22,7 +22,7 @@ A way to write your code with functional programming in mind
    var FluidFunc = require('fluid-func');
 ```
 
-Note: This package is basically a fork of [fluid-chain](https://github.com/rickzx98/fluid-chains) with lighter packaging, less dependencies, a more secure aproach to chaining functions and focused on functional programming.
+Note: This package is basically a fork of [fluid-chains](https://github.com/rickzx98/fluid-chains) with lighter packaging, less dependencies, a more secure aproach to chaining functions and focused on functional programming.
 
 ### Two ways to create a Func
 

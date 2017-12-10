@@ -126,7 +126,7 @@ Parameters are immutable and can be accessed by calling the field as function.
 
 ### Maintaining a context
 
-The first accessible across the Func sequence.
+The first parameter is accessible across the Func sequence.
 
 ```javascript
     new FluidFunc('_1stFunc', function(param){

@@ -9,7 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var SingleChain = exports.SingleChain = function () {
-    function SingleChain(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId) {
+    function SingleChain(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache) {
         _classCallCheck(this, SingleChain);
 
         this.getChain = getChain;
@@ -18,6 +18,7 @@ var SingleChain = exports.SingleChain = function () {
         this.Reducer = Reducer;
         this.addChainToStack = addChainToStack;
         this.stackId = stackId;
+        this.cache = cache;
     }
 
     _createClass(SingleChain, [{
@@ -47,7 +48,7 @@ var SingleChain = exports.SingleChain = function () {
                                         }
                                     });
                                 } else {
-                                    var action = chain.action(param);
+                                    var action = chain.cachedLast ? _this.cache(_this.stackId, chains, param, chain.cachedLast, chain.action) : chain.action(param);
                                     var context = _this.Context.createContext(chain.$chainId);
                                     if (action !== undefined) {
                                         if (action instanceof Promise) {
@@ -120,7 +121,7 @@ var onFailChain = function onFailChain(chain, error, resolve, reject, singleChai
 };
 var convertParamFromSpec = function convertParamFromSpec(param, chainInstance) {
     var newParam = param;
-    if (chainInstance.isStrict) {
+    if (!!chainInstance.isStrict) {
         newParam = {};
         if (chainInstance.specs) {
             chainInstance.specs.forEach(function (spec) {

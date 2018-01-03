@@ -10,6 +10,10 @@ exports.putChainContext = putChainContext;
 exports.getChainDataById = getChainDataById;
 exports.createExecutionStack = createExecutionStack;
 exports.addChainToStack = addChainToStack;
+exports.cacheChainAction = cacheChainAction;
+exports.hasCached = hasCached;
+exports.getCachedChainAction = getCachedChainAction;
+exports.clearCache = clearCache;
 exports.deleteStack = deleteStack;
 exports.getStorage = getStorage;
 
@@ -56,6 +60,26 @@ function createExecutionStack() {
 
 function addChainToStack(stackId, chainId) {
     storage[stackId].chains.push(chainId);
+}
+
+function cacheChainAction(stackId, chainId, param, result) {
+    storage[stackId][chainId] = {};
+    storage[stackId][chainId][JSON.stringify(param)] = {
+        result: result,
+        timestamp: new Date().getMilliseconds()
+    };
+}
+
+function hasCached(stackId, chainId, param) {
+    return storage[stackId][chainId] && storage[stackId][chainId][JSON.stringify(param)];
+}
+
+function getCachedChainAction(stackId, chainId, param) {
+    return storage[stackId][chainId][JSON.stringify(param)];
+}
+
+function clearCache(stackId, chainId) {
+    delete storage[stackId][chainId];
 }
 
 function deleteStack(stackId) {

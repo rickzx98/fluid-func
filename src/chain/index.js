@@ -64,8 +64,11 @@ export class Chain {
     onFail(onFail) {
         this.onfail = onFail;
         return this;
-    };
-
+    }
+    cache(cachedLast) {
+        this.cachedLast = cachedLast || 1500;
+        return this;
+    }
     execute(param) {
         return Chain.start(this.sequence || this.name, param);
     }

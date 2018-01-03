@@ -58,7 +58,9 @@ var Chain = function () {
         }
     }, {
         key: 'spec',
-        value: function spec(field, json) {
+        value: function spec(field) {
+            var json = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
             var spec = new _spec2.default(field);
             if (json.require) {
                 spec.require(json.requireMessage);
@@ -100,6 +102,12 @@ var Chain = function () {
         key: 'onFail',
         value: function onFail(_onFail) {
             this.onfail = _onFail;
+            return this;
+        }
+    }, {
+        key: 'cache',
+        value: function cache(cachedLast) {
+            this.cachedLast = cachedLast || 1500;
             return this;
         }
     }, {

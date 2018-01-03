@@ -1,11 +1,12 @@
 export class SingleChain {
-    constructor(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId) {
+    constructor(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache) {
         this.getChain = getChain;
         this.Context = Context;
         this.propertyToContext = propertyToContext;
         this.Reducer = Reducer;
         this.addChainToStack = addChainToStack;
         this.stackId = stackId;
+        this.cache = cache;
     }
 
     start(initialParam, chains) {
@@ -33,7 +34,8 @@ export class SingleChain {
                                         }
                                     });
                             } else {
-                                const action = chain.action(param);
+                                const action = chain.cachedLast ? this.cache(this.stackId, chains,
+                                    param, chain.cachedLast, chain.action) : chain.action(param);
                                 const context = this.Context.createContext(chain.$chainId);
                                 if (action !== undefined) {
                                     if (action instanceof Promise) {
@@ -101,7 +103,7 @@ const onFailChain = (chain, error, resolve, reject, singleChain, initialParam, c
 };
 const convertParamFromSpec = (param, chainInstance) => {
     let newParam = param;
-    if (chainInstance.isStrict) {
+    if (!!chainInstance.isStrict) {
         newParam = {};
         if (chainInstance.specs) {
             chainInstance.specs.forEach(spec => {
@@ -117,6 +119,5 @@ const addSpecToContext = (specs, context) => {
         specs.forEach(spec => {
             context.addSpec(spec);
         });
-
     }
 };

@@ -13,7 +13,8 @@ import {
 } from './put';
 
 import { exists } from './exists';
-import {generateUUID} from '../Util';
+import { generateUUID } from '../Util';
+
 if (global && !global.storage) {
     global.storage = {};
 }
@@ -51,9 +52,29 @@ export function addChainToStack(stackId, chainId) {
     storage[stackId].chains.push(chainId);
 }
 
+export function cacheChainAction(stackId, chainId, param, result) {
+    storage[stackId][chainId] = {};
+    storage[stackId][chainId][JSON.stringify(param)] = {
+        result,
+        timestamp: new Date().getMilliseconds()
+    };
+}
+
+export function hasCached(stackId, chainId, param) {
+    return storage[stackId][chainId] && storage[stackId][chainId][JSON.stringify(param)];
+}
+
+export function getCachedChainAction(stackId, chainId, param) {
+    return storage[stackId][chainId][JSON.stringify(param)];
+}
+
+export function clearCache(stackId, chainId) {
+    delete storage[stackId][chainId];
+}
+
 export function deleteStack(stackId) {
     const stack = storage[stackId];
-    stack.chains.forEach(chainId=> {
+    stack.chains.forEach(chainId => {
         const chain = storage[chainId];
         for (let field in chain) {
             if (chain.hasOwnProperty(field)) {

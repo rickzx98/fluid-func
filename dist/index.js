@@ -6,9 +6,4 @@ Object.defineProperty(exports, "__esModule", {
 
 var _chain = require('./chain/');
 
-Object.defineProperty(exports, 'Func', {
-  enumerable: true,
-  get: function get() {
-    return _chain.Chain;
-  }
-});
+exports.default = _chain.Chain;

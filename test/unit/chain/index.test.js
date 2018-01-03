@@ -269,4 +269,32 @@ describe('Chain unit test', () => {
                 done();
             }).catch(err => console.log);
     });
+
+    it('should cache chain action', done => {
+        let counter = 0;
+        Chain.create('SampleChain17')
+            .onStart(() => {
+                counter++;
+                return '17';
+            })
+            .spec('hello')
+            .strict()
+            .cache();
+
+        Chain.create('SampleChain18')
+            .onStart(() => {
+                counter++;
+                return '18';
+            })
+            .spec('hello')
+            .strict()
+            .cache(5000);
+
+        Chain.start(['SampleChain17', 'SampleChain18', 'SampleChain17', 'SampleChain18'], {
+            hello: 'hello'
+        }).then(result => {
+            expect(counter).to.be.equal(2);
+            done();
+        }).catch(console.log);
+    });
 });

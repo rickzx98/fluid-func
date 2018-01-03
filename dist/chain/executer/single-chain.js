@@ -34,7 +34,7 @@ var SingleChain = exports.SingleChain = function () {
                         var paramAsContext = new _this.Context(initialParam.$chainId());
                         addSpecToContext(chain.specs, paramAsContext);
                         paramAsContext.runSpecs().then(function () {
-                            var param = convertParamFromSpec(paramAsContext.getData(), chain);
+                            var param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                             onBeforeChain(chain, param, resolve, function (err) {
                                 onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
                             }, _this.Context, function () {

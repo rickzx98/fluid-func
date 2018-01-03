@@ -20,7 +20,7 @@ function cache(stackId, chainId, param, cachedLast, action) {
 
     if ((0, _storage.hasCached)(stackId, chainId, paramJSON)) {
         var cachedAction = (0, _storage.getCachedChainAction)(stackId, chainId, paramJSON);
-        var currentTime = new Date().getMilliseconds();
+        var currentTime = new Date().getTime();
         var cachedTimeLast = currentTime - cachedAction.timestamp;
         if (cachedTimeLast <= cachedLast) {
             result = cachedAction.result;

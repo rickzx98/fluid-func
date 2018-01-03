@@ -466,4 +466,38 @@ To make the Func act as reducer use func.reduce(${fieldToReduce})
             });
 ```
 
+### Cache
 
+func.cache(cachedFor:number)
+
+Param     | Description                                                          | Default
+----------|----------------------------------------------------------------------|---------
+cachedFor | Sets the number (in milliseconds) for how long it will cache the Func| 1500
+
+```javascript
+  
+   var counter = 0;
+
+   new FluidFunc('_1stFunc', (parameter) => {
+        counter++;
+            return '_1st';
+        })
+        .strict()
+        .cache();
+
+   new FluidFunc('_2ndFunc', (parameter) => {
+        counter++;
+            return '_2nd';
+        })
+        .strict()
+        .cache();
+
+FluidFunc.start(['_1stFunc','_2ndFunc','_1stFunc','_2ndFunc'], {
+    hi:'hello'})
+    .then(()=>{
+        //counter will be equal to two
+    });
+
+```
+
+Note: The cache is based on the parameter set to the Func action so enabling .strict() mode will make cache more effective.

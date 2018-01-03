@@ -297,4 +297,35 @@ describe('Chain unit test', () => {
             done();
         }).catch(console.log);
     });
+
+    it('should cache chain action for a specific time', done => {
+        let counter = 0;
+        Chain.create('SampleChain19')
+            .onStart(() => {
+                counter++;
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve('19');
+                    }, 501);
+                })
+            })
+            .spec('hello')
+            .strict();
+
+        Chain.create('SampleChain20')
+            .onStart(() => {
+                counter++;
+                return '18';
+            })
+            .spec('hello')
+            .strict()
+            .cache(500);
+
+        Chain.start(['SampleChain19', 'SampleChain20', 'SampleChain19', 'SampleChain20'], {
+            hello: 'hello'
+        }).then(result => {
+            expect(counter).to.be.equal(4);
+            done();
+        }).catch(console.log);
+    });
 });

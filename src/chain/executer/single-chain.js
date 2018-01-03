@@ -18,7 +18,7 @@ export class SingleChain {
                     const paramAsContext = new this.Context(initialParam.$chainId());
                     addSpecToContext(chain.specs, paramAsContext);
                     paramAsContext.runSpecs().then(() => {
-                        const param = convertParamFromSpec(paramAsContext.getData(), chain);
+                        const param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                         onBeforeChain(chain, param, resolve, (err) => {
                             onFailChain(chain, err, resolve.bind(this), reject.bind(this), this, initialParam, chains);
                         }, this.Context, () => {

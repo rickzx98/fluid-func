@@ -66,7 +66,7 @@ function cacheChainAction(stackId, chainId, param, result) {
     storage[stackId][chainId] = {};
     storage[stackId][chainId][JSON.stringify(param)] = {
         result: result,
-        timestamp: new Date().getMilliseconds()
+        timestamp: new Date().getTime()
     };
 }
 

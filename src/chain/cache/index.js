@@ -13,7 +13,7 @@ export function cache(stackId, chainId, param, cachedLast, action) {
 
     if (hasCached(stackId, chainId, paramJSON)) {
         const cachedAction = getCachedChainAction(stackId, chainId, paramJSON);
-        const currentTime = new Date().getMilliseconds();
+        const currentTime = new Date().getTime();
         const cachedTimeLast = currentTime - cachedAction.timestamp;
         if (cachedTimeLast <= cachedLast) {
             result = cachedAction.result;

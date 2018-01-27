@@ -18,8 +18,11 @@ import { generateUUID } from '../Util';
 if (global && !global.storage) {
     global.storage = {};
 }
+else if (window && !window.storage) {
+    window.storage = {};
+}
 
-const storage = global.storage;
+const storage = global.storage || window.storage;
 
 export function getChain(name) {
     return gc(storage, name);

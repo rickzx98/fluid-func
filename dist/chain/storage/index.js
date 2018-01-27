@@ -27,9 +27,11 @@ var _Util = require('../Util');
 
 if (global && !global.storage) {
     global.storage = {};
+} else if (window && !window.storage) {
+    window.storage = {};
 }
 
-var storage = global.storage;
+var storage = global.storage || window.storage;
 
 function getChain(name) {
     return (0, _get.getChain)(storage, name);

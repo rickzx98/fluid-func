@@ -15,14 +15,14 @@ import {
 import { exists } from './exists';
 import { generateUUID } from '../Util';
 
-if (global && !global.storage) {
-    global.storage = {};
+if (global && !global.$$fluidFuncStorage) {
+    global.$$fluidFuncStorage = {};
 }
-else if (window && !window.storage) {
-    window.storage = {};
+else if (window && !window.$$fluidFuncStorage) {
+    window.$$fluidFuncStorage = {};
 }
 
-const storage = global.storage || window.storage;
+const storage = global.$$fluidFuncStorage || window.$$fluidFuncStorage;
 
 export function getChain(name) {
     return gc(storage, name);

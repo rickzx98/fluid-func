@@ -14,7 +14,7 @@ describe('Chain unit test', () => {
             return context;
         });
 
-        Chain.start('SampleChain1', { hi: 'initParam' })
+        Chain.start('SampleChain1', {hi: 'initParam'})
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -25,7 +25,11 @@ describe('Chain unit test', () => {
                 done();
             });
     });
-
+    it('checks if chain already exists', ()=> {
+        new Chain('ExistingChain', ()=> {
+        });
+        expect(Chain.exists('ExistingChain')).to.be.true;
+    });
     it('executes chain asynchronously', done => {
         new Chain('SampleChain2', (parameter) => {
             let context = {};
@@ -38,7 +42,7 @@ describe('Chain unit test', () => {
             });
         });
 
-        Chain.start('SampleChain2', { hi: 'initParam' })
+        Chain.start('SampleChain2', {hi: 'initParam'})
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -82,8 +86,8 @@ describe('Chain unit test', () => {
                 expect(result._3rd()).to.be.equal('1st - 2nd - 3rd');
                 done();
             }).catch(() => {
-                done();
-            });
+            done();
+        });
     });
 
     it('executes chain with reducer', done => {
@@ -91,7 +95,7 @@ describe('Chain unit test', () => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
 
-        Chain.start('SampleChainReducer', { sampleArray: [1, 2, 3, 4, 5] })
+        Chain.start('SampleChainReducer', {sampleArray: [1, 2, 3, 4, 5]})
             .then(result => {
                 expect(result.value()).to.be.equal(15);
                 done();
@@ -104,9 +108,9 @@ describe('Chain unit test', () => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
         new Chain('SampleChain7', (parameter) => {
-            return { sum: 5 + parameter.value() };
+            return {sum: 5 + parameter.value()};
         });
-        Chain.start(['SampleChainReducer1', 'SampleChain7'], { sampleArray: [1, 2, 3, 4, 5] })
+        Chain.start(['SampleChainReducer1', 'SampleChain7'], {sampleArray: [1, 2, 3, 4, 5]})
             .then(result => {
                 expect(result.sum()).to.be.equal(20);
                 done();
@@ -202,7 +206,7 @@ describe('Chain unit test', () => {
                 });
             }
         });
-        Chain.start('SampleChain12', { value: 'false' }).catch(err => {
+        Chain.start('SampleChain12', {value: 'false'}).catch(err => {
             expect(err.error).to.be.equal('Value should be sample');
             done();
         });
@@ -223,15 +227,18 @@ describe('Chain unit test', () => {
             })
             .connect('SampleChain14')
             .onStart(() => 'I ran 14')
-            .onBefore(() => { ifIStarted = false; return false; })
+            .onBefore(() => {
+                ifIStarted = false;
+                return false;
+            })
             .execute()
             .then((result) => {
                 expect(ifIStarted).to.be.false;
                 done();
             }).catch(err => {
-                console.log(err);
-                done();
-            });
+            console.log(err);
+            done();
+        });
     });
 
     it('should trigger onFail function is a chain has failed', done => {

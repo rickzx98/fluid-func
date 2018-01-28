@@ -127,6 +127,11 @@ var Chain = function () {
         value: function create(name) {
             return new Chain(name);
         }
+    }, {
+        key: 'exists',
+        value: function exists(name) {
+            return (0, _storage.isExists)(name);
+        }
     }]);
 
     return Chain;

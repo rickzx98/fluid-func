@@ -5,4 +5,4 @@
  */
 export const exists = (storage, chainName) => {
     return !!storage[chainName];
-}
+};

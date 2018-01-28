@@ -1,6 +1,6 @@
 {
     "name": "fluid-func",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "A way to write your code with functional programming in mind.",
     "main": "dist/index.js",
     "scripts": {

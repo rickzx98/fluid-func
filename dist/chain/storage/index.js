@@ -16,6 +16,7 @@ exports.getCachedChainAction = getCachedChainAction;
 exports.clearCache = clearCache;
 exports.deleteStack = deleteStack;
 exports.getStorage = getStorage;
+exports.isExists = isExists;
 
 var _get = require('./get');
 
@@ -100,4 +101,8 @@ function deleteStack(stackId) {
 
 function getStorage() {
     return Object.freeze(storage);
+}
+
+function isExists(name) {
+    return (0, _exists.exists)(storage, name);
 }

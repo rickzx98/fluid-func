@@ -93,3 +93,7 @@ export function deleteStack(stackId) {
 export function getStorage() {
     return Object.freeze(storage);
 }
+
+export function isExists(name){
+    return exists(storage, name);
+}

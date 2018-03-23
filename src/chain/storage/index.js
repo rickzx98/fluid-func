@@ -15,14 +15,14 @@ import {
 import { exists } from './exists';
 import { generateUUID } from '../Util';
 
-if (global && !global.$$fluidFuncStorage) {
-    global.$$fluidFuncStorage = {};
+if (global && !global.__$fs__) {
+    global.__$fs__ = {};
 }
-else if (window && !window.$$fluidFuncStorage) {
-    window.$$fluidFuncStorage = {};
+else if (window && !window.__$fs__) {
+    window.__$fs__ = {};
 }
 
-const storage = global.$$fluidFuncStorage || window.$$fluidFuncStorage;
+const storage = global.__$fs__ || window.__$fs__;
 
 export function getChain(name) {
     return gc(storage, name);
@@ -94,6 +94,6 @@ export function getStorage() {
     return Object.freeze(storage);
 }
 
-export function isExists(name){
+export function isExists(name) {
     return exists(storage, name);
 }

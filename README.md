@@ -155,7 +155,11 @@ In Func sequence you can set the next parameter by returning a value or an objec
         // do the first func
         const paramValue = param.paramName();
         return {
-            from1st:'_1st says hi'
+            from1st:'_1st says hi',
+            person: {
+                name: 'John Doe',
+                age: 22
+            }
         };
     });
 
@@ -163,6 +167,7 @@ In Func sequence you can set the next parameter by returning a value or an objec
         //do the 2nd func
          const paramValue = param.paramName();
          const _1stSaysHi = param.from1st(); // got from the previous func
+         const name = param.person('name');
     });
 
     FluidFunc.start(['_1stFunc','_2ndFunc'], {paramName:'paramValue'})

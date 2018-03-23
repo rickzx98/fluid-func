@@ -26,13 +26,17 @@ export const putChain = (storage, exists, name, chain) => {
  */
 export const putChainContext = (storage, chainId, field, value) => {
     if (storage[PUT_CHAIN_CONTEXT_METHOD]) {
-        storage[PUT_CHAIN_CONTEXT_METHOD](chainId, field, ()=> value);
+        storage[PUT_CHAIN_CONTEXT_METHOD](chainId, field, () => value);
     } else {
         if (!storage[chainId]) {
             storage[chainId] = {};
         }
-        const frozenValue = ()=> {
-            return Object.freeze(value);
+        const frozenValue = (field) => {
+            let newValue = value;
+            if (field) {
+                newValue = value[field];
+            }
+            return Object.freeze(newValue);
         };
         storage[chainId][field] = frozenValue.bind(storage[chainId]);
     }

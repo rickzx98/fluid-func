@@ -26,13 +26,13 @@ var _exists = require('./exists');
 
 var _Util = require('../Util');
 
-if (global && !global.$$fluidFuncStorage) {
-    global.$$fluidFuncStorage = {};
-} else if (window && !window.$$fluidFuncStorage) {
-    window.$$fluidFuncStorage = {};
+if (global && !global.__$fs__) {
+    global.__$fs__ = {};
+} else if (window && !window.__$fs__) {
+    window.__$fs__ = {};
 }
 
-var storage = global.$$fluidFuncStorage || window.$$fluidFuncStorage;
+var storage = global.__$fs__ || window.__$fs__;
 
 function getChain(name) {
     return (0, _get.getChain)(storage, name);

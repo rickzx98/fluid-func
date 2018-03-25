@@ -47,7 +47,7 @@ var putChainContext = exports.putChainContext = function putChainContext(storage
         }
         var frozenValue = function frozenValue(field) {
             var newValue = value;
-            if (field) {
+            if (field && value) {
                 newValue = value[field];
             }
             if (newValue) {

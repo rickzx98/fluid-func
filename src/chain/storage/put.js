@@ -33,7 +33,7 @@ export const putChainContext = (storage, chainId, field, value) => {
         }
         const frozenValue = (field) => {
             let newValue = value;
-            if (field) {
+            if (field && value) {
                 newValue = value[field];
             }
             if (newValue) {

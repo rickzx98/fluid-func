@@ -36,9 +36,11 @@ export const putChainContext = (storage, chainId, field, value) => {
             if (field) {
                 newValue = value[field];
             }
-            return Object.freeze(newValue);
+            if (newValue) {
+                return Object.freeze(newValue);
+            }
         };
-        storage[chainId][field] = frozenValue.bind(storage[chainId]);
+        storage[chainId][field] = frozenValue ? frozenValue.bind(storage[chainId]) : undefined;
     }
 };
 

@@ -9,12 +9,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Transformer = exports.Transformer = function () {
-    function Transformer(field, specData, context) {
+    function Transformer(field, specData, context, SpecFailedException) {
         _classCallCheck(this, Transformer);
 
         this.field = field;
         this.specData = specData;
         this.context = context;
+        this.SpecFailedException = SpecFailedException;
     }
 
     _createClass(Transformer, [{
@@ -23,23 +24,25 @@ var Transformer = exports.Transformer = function () {
             var _this = this;
 
             return new Promise(function (resolve, reject) {
-                var transformer = _this.specData.transformer;
+                new _this.SpecFailedException(function () {
+                    var transformer = _this.specData.transformer;
 
-                if (transformer) {
-                    var contextData = _this.context.getData();
-                    if (contextData[_this.field]) {
-                        transformer(contextData[_this.field]()).then(function (newValue) {
-                            _this.context.set(_this.field, newValue);
+                    if (transformer) {
+                        var contextData = _this.context.getData();
+                        if (contextData[_this.field]) {
+                            transformer(contextData[_this.field]()).then(function (newValue) {
+                                _this.context.set(_this.field, newValue);
+                                resolve();
+                            }).catch(function (error) {
+                                reject({ field: _this.field, error: error });
+                            });
+                        } else {
                             resolve();
-                        }).catch(function (error) {
-                            reject(error);
-                        });
+                        }
                     } else {
                         resolve();
                     }
-                } else {
-                    resolve();
-                }
+                }, _this.field, reject);
             });
         }
     }]);

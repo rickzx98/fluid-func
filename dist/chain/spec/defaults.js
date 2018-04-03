@@ -9,12 +9,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Defaults = exports.Defaults = function () {
-    function Defaults(field, specData, context) {
+    function Defaults(field, specData, context, SpecFailedException) {
         _classCallCheck(this, Defaults);
 
         this.field = field;
         this.specData = specData;
         this.context = context;
+        this.SpecFailedException = SpecFailedException;
     }
 
     _createClass(Defaults, [{
@@ -25,12 +26,14 @@ var Defaults = exports.Defaults = function () {
             var defaultValue = this.specData.defaultValue;
 
             return new Promise(function (resolve, reject) {
-                try {
-                    _this.context.set(_this.field, defaultValue);
-                    resolve();
-                } catch (err) {
-                    reject(err);
-                }
+                new _this.SpecFailedException(function () {
+                    try {
+                        _this.context.set(_this.field, defaultValue);
+                        resolve();
+                    } catch (err) {
+                        reject({ error: err, field: _this.field });
+                    }
+                }, _this.field, reject);
             });
         }
     }]);

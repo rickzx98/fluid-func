@@ -41,3 +41,30 @@ export function isValidJson(json) {
         return false;
     }
 }
+
+export class CollectPromiseResult {
+    constructor(promises) {
+        this.promises = promises;
+    }
+    collect(callback, results = []) {
+        if (this.promises.length > 0) {
+            const promise = this.promises.shift();
+            promise
+                .then(data => {
+                    results.push({ success: true, data });
+                    new CollectPromiseResult(this.promises).collect(callback, results);
+                })
+                .catch(error => {
+                    results.push({ failed: true, error });
+                    new CollectPromiseResult(this.promises).collect(callback, results);
+                });
+        } else {
+            const error = results.filter(result => result.failed).map(result => result.error);
+            const success = results.filter(result => result.success).map(result => result.data);
+            callback({
+                error,
+                success
+            });
+        }
+    }
+}

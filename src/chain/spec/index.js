@@ -1,4 +1,5 @@
 import { Defaults } from './defaults'
+import { SpecFailedException } from './SpecFailedException';
 import { Transformer } from './transformer';
 import { Translator } from './translator';
 import { Validators } from './validators';
@@ -37,23 +38,23 @@ export default class Spec {
     }
 
     runValidation(context) {
-        return new Validators(this.field, context, this.data).runValidation();
+        return new Validators(this.field, context, this.data, SpecFailedException).runValidation();
     }
 
     runRequireValidation(context) {
-        return new Validators(this.field, context, this.data).runRequireValidation();
+        return new Validators(this.field, context, this.data, SpecFailedException).runRequireValidation();
     }
 
     runDefault(context) {
-        return new Defaults(this.field, this.data, context).runDefault();
+        return new Defaults(this.field, this.data, context, SpecFailedException).runDefault();
     }
 
     runTransform(context) {
-        return new Transformer(this.field, this.data, context).runTransform();
+        return new Transformer(this.field, this.data, context, SpecFailedException).runTransform();
     }
 
     runTranslate(context) {
-        return new Translator(this.field, this.data, context).runTranslate();
+        return new Translator(this.field, this.data, context, SpecFailedException).runTranslate();
     }
 }
 

@@ -11,6 +11,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _defaults = require('./defaults');
 
+var _SpecFailedException = require('./SpecFailedException');
+
 var _transformer = require('./transformer');
 
 var _translator = require('./translator');
@@ -74,27 +76,27 @@ var Spec = function () {
     }, {
         key: 'runValidation',
         value: function runValidation(context) {
-            return new _validators.Validators(this.field, context, this.data).runValidation();
+            return new _validators.Validators(this.field, context, this.data, _SpecFailedException.SpecFailedException).runValidation();
         }
     }, {
         key: 'runRequireValidation',
         value: function runRequireValidation(context) {
-            return new _validators.Validators(this.field, context, this.data).runRequireValidation();
+            return new _validators.Validators(this.field, context, this.data, _SpecFailedException.SpecFailedException).runRequireValidation();
         }
     }, {
         key: 'runDefault',
         value: function runDefault(context) {
-            return new _defaults.Defaults(this.field, this.data, context).runDefault();
+            return new _defaults.Defaults(this.field, this.data, context, _SpecFailedException.SpecFailedException).runDefault();
         }
     }, {
         key: 'runTransform',
         value: function runTransform(context) {
-            return new _transformer.Transformer(this.field, this.data, context).runTransform();
+            return new _transformer.Transformer(this.field, this.data, context, _SpecFailedException.SpecFailedException).runTransform();
         }
     }, {
         key: 'runTranslate',
         value: function runTranslate(context) {
-            return new _translator.Translator(this.field, this.data, context).runTranslate();
+            return new _translator.Translator(this.field, this.data, context, _SpecFailedException.SpecFailedException).runTranslate();
         }
     }]);
 

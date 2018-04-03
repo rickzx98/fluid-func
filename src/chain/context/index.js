@@ -1,5 +1,6 @@
 import { getChainContext, getChainDataById, putChainContext } from '../storage/';
 
+import { CollectPromiseResult } from '../Util';
 import { GetContext } from './get';
 import { Validators } from './validators';
 import { setContextValue } from './set';
@@ -23,11 +24,11 @@ export default class Context {
     }
 
     validate() {
-        return new Validators(this.$chainId, getChainContext.bind(this)).runValidations(this);
+        return new Validators(this.$chainId, getChainContext.bind(this), CollectPromiseResult).runValidations(this);
     }
 
     runSpecs() {
-        return new Validators(this.$chainId, getChainContext.bind(this)).runSpecs(this);
+        return new Validators(this.$chainId, getChainContext.bind(this), CollectPromiseResult).runSpecs(this);
     }
 
     static createContext(chainId) {

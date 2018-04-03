@@ -1,8 +1,9 @@
+import { isExists, putChain } from './storage/';
+
 import Context from './context/';
 import { Executer } from './executer/';
 import Spec from './spec/';
 import { generateUUID } from './Util';
-import { putChain, isExists } from './storage/';
 
 export class Chain {
     constructor(name, action = (parameter) => {
@@ -38,7 +39,8 @@ export class Chain {
 
     spec(field, json = {}) {
         const spec = new Spec(field);
-        if (json.require) {
+        const isRequired = (json.require && json.require instanceof Function && json.require()) || json.require;
+        if (isRequired) {
             spec.require(json.requireMessage);
         }
         if (json.default) {

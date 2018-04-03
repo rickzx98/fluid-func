@@ -9,12 +9,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Validators = exports.Validators = function () {
-    function Validators(field, context, specData) {
+    function Validators(field, context, specData, SpecFailedException) {
         _classCallCheck(this, Validators);
 
         this.field = field;
         this.context = context;
         this.specData = specData;
+        this.SpecFailedException = SpecFailedException;
     }
 
     _createClass(Validators, [{
@@ -26,13 +27,19 @@ var Validators = exports.Validators = function () {
                 require = _specData.require,
                 requireMessage = _specData.requireMessage;
 
+            var isRequired = require instanceof Function && require() || require;
             return new Promise(function (resolve, reject) {
-                var contextData = _this.context.getData();
-                if (require && (!contextData[_this.field] || contextData[_this.field]() === '')) {
-                    reject(new Error(requireMessage || 'Field ' + _this.field + ' is required.'));
-                } else {
-                    resolve();
-                }
+                new _this.SpecFailedException(function () {
+                    var contextData = _this.context.getData();
+                    if (isRequired && (!contextData[_this.field] || contextData[_this.field]() === '')) {
+                        reject({
+                            field: _this.field,
+                            error: new Error(requireMessage || 'Field ' + _this.field + ' is required.')
+                        });
+                    } else {
+                        resolve();
+                    }
+                }, _this.field, reject);
             });
         }
     }, {
@@ -43,16 +50,21 @@ var Validators = exports.Validators = function () {
             var validator = this.specData.validator;
 
             return new Promise(function (resolve, reject) {
-                var contextData = _this2.context.getData();
-                if (validator) {
-                    validator(contextData[_this2.field] ? contextData[_this2.field]() : undefined).then(function () {
+                new _this2.SpecFailedException(function () {
+                    var contextData = _this2.context.getData();
+                    if (validator) {
+                        validator(contextData[_this2.field] ? contextData[_this2.field]() : undefined).then(function () {
+                            resolve();
+                        }).catch(function (error) {
+                            reject({
+                                field: _this2.field,
+                                error: error
+                            });
+                        });
+                    } else {
                         resolve();
-                    }).catch(function (error) {
-                        reject(error);
-                    });
-                } else {
-                    resolve();
-                }
+                    }
+                }, _this2.field, reject);
             });
         }
     }]);

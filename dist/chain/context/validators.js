@@ -13,11 +13,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var VALIDATORS = '$$$validators';
 
 var Validators = exports.Validators = function () {
-    function Validators(chainId, getChainContext) {
+    function Validators(chainId, getChainContext, CollectPromiseResult) {
         _classCallCheck(this, Validators);
 
         var validators = getChainContext(chainId, VALIDATORS);
         this.fieldSpecs = validators ? validators() : [];
+        this.CollectPromiseResult = CollectPromiseResult;
     }
 
     _createClass(Validators, [{
@@ -29,14 +30,26 @@ var Validators = exports.Validators = function () {
     }, {
         key: 'runValidations',
         value: function runValidations(context) {
+            var _this = this;
+
             var validators = this.fieldSpecs.map(function (validator) {
                 return validator.runValidation(context);
             });
-            return Promise.all(validators);
+            return new Promise(function (resolve, reject) {
+                new _this.CollectPromiseResult(validators).collect(function (result) {
+                    if (result.error && result.error.length > 0) {
+                        reject(result.error);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
         }
     }, {
         key: 'runSpecs',
         value: function runSpecs(context) {
+            var _this2 = this;
+
             var validators = this.fieldSpecs.map(function (validator) {
                 var promises = validator.actions.map(function (action) {
                     switch (action) {
@@ -54,9 +67,13 @@ var Validators = exports.Validators = function () {
                 });
                 return Promise.all(promises);
             });
-            return Promise.all(validators).catch(function (err) {
-                return new Promise(function (resolve, reject) {
-                    reject(err);
+            return new Promise(function (resolve, reject) {
+                new _this2.CollectPromiseResult(validators).collect(function (result) {
+                    if (result.error && result.error.length > 0) {
+                        reject(result.error);
+                    } else {
+                        resolve();
+                    }
                 });
             });
         }

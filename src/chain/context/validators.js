@@ -1,8 +1,9 @@
 const VALIDATORS = '$$$validators';
 export class Validators {
-    constructor(chainId, getChainContext) {
+    constructor(chainId, getChainContext, CollectPromiseResult) {
         const validators = getChainContext(chainId, VALIDATORS);
         this.fieldSpecs = validators ? validators() : [];
+        this.CollectPromiseResult = CollectPromiseResult;
     }
     addSpec(fieldSpec, setChainContextValue) {
         const validators = Object.assign([], [...this.fieldSpecs, fieldSpec]);
@@ -11,7 +12,16 @@ export class Validators {
 
     runValidations(context) {
         const validators = this.fieldSpecs.map(validator => validator.runValidation(context));
-        return Promise.all(validators);
+        return new Promise((resolve, reject) => {
+            new this.CollectPromiseResult(validators)
+                .collect((result) => {
+                    if (result.error && result.error.length > 0) {
+                        reject(result.error);
+                    } else {
+                        resolve();
+                    }
+                })
+        });
     }
 
     runSpecs(context) {
@@ -35,12 +45,16 @@ export class Validators {
                 );
                 return Promise.all(promises);
             });
-        return Promise.all(validators)
-            .catch(err => {
-                return new Promise((resolve, reject) => {
-                    reject(err);
-                });
-            });
+        return new Promise((resolve, reject) => {
+            new this.CollectPromiseResult(validators)
+                .collect((result) => {
+                    if (result.error && result.error.length > 0) {
+                        reject(result.error);
+                    } else {
+                        resolve();
+                    }
+                })
+        });
     }
 
 }

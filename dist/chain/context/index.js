@@ -9,6 +9,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _storage = require('../storage/');
 
+var _Util = require('../Util');
+
 var _get = require('./get');
 
 var _validators = require('./validators');
@@ -42,12 +44,12 @@ var Context = function () {
     }, {
         key: 'validate',
         value: function validate() {
-            return new _validators.Validators(this.$chainId, _storage.getChainContext.bind(this)).runValidations(this);
+            return new _validators.Validators(this.$chainId, _storage.getChainContext.bind(this), _Util.CollectPromiseResult).runValidations(this);
         }
     }, {
         key: 'runSpecs',
         value: function runSpecs() {
-            return new _validators.Validators(this.$chainId, _storage.getChainContext.bind(this)).runSpecs(this);
+            return new _validators.Validators(this.$chainId, _storage.getChainContext.bind(this), _Util.CollectPromiseResult).runSpecs(this);
         }
     }], [{
         key: 'createContext',

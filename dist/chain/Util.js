@@ -3,7 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 exports.isValidJson = isValidJson;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var generateUUID = exports.generateUUID = function generateUUID() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -50,3 +56,48 @@ function isValidJson(json) {
         return false;
     }
 }
+
+var CollectPromiseResult = exports.CollectPromiseResult = function () {
+    function CollectPromiseResult(promises) {
+        _classCallCheck(this, CollectPromiseResult);
+
+        this.promises = promises;
+    }
+
+    _createClass(CollectPromiseResult, [{
+        key: 'collect',
+        value: function collect(callback) {
+            var _this = this;
+
+            var results = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+            if (this.promises.length > 0) {
+                var promise = this.promises.shift();
+                promise.then(function (data) {
+                    results.push({ success: true, data: data });
+                    new CollectPromiseResult(_this.promises).collect(callback, results);
+                }).catch(function (error) {
+                    results.push({ failed: true, error: error });
+                    new CollectPromiseResult(_this.promises).collect(callback, results);
+                });
+            } else {
+                var error = results.filter(function (result) {
+                    return result.failed;
+                }).map(function (result) {
+                    return result.error;
+                });
+                var success = results.filter(function (result) {
+                    return result.success;
+                }).map(function (result) {
+                    return result.data;
+                });
+                callback({
+                    error: error,
+                    success: success
+                });
+            }
+        }
+    }]);
+
+    return CollectPromiseResult;
+}();

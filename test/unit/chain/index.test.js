@@ -6,6 +6,35 @@ import chai from 'chai';
 const expect = chai.expect;
 
 describe('Chain unit test', done => {
+    it('should allow function w/out parameter in spec.require', done => {
+        function innerClass() {
+            let sampleClass = {};
+            sampleClass.innerHello = 'Hi';
+            sampleClass.isRequired = function () {
+                let result = sampleClass.innerHello === 'Hi';
+                return result;
+            }
+            new Chain('RequireSampleChain', (param) => {
+
+            }).spec('sample', {
+                require: sampleClass.isRequired
+            });
+            return sampleClass;
+        }
+        let inner = innerClass();
+
+        inner.innerHello = 'hello';
+        new Chain('RequireSampleChain1', () => {
+        });
+        Chain.start(['RequireSampleChain1', 'RequireSampleChain'])
+            .then((result) => {
+                done();
+            })
+            .catch(error => {
+                expect(error.error.message).to.be.equal('Field sample is required.');
+                done();
+            });
+    });
     it('get the field specified in result function', () => {
         new Chain('FieldChainSample1', (parameters) => {
             const hello = parameters.takeThat('hello');
@@ -201,7 +230,7 @@ describe('Chain unit test', done => {
         });
     });
 
-    it('should executes chain with custom validator', done => {
+    it.only('should executes chain with custom validator', done => {
         new Chain('SampleChain11', (parameter) => {
             expect(parameter.sample()).to.be.equal('sample');
         }).spec('sample', {
@@ -221,13 +250,17 @@ describe('Chain unit test', done => {
             validate: (value) => {
                 return new Promise((resolve, reject) => {
                     if (value !== 'sample') {
-                        reject('Value should be sample');
+                        reject(new Error('Value should be sample'));
                     }
                 });
             }
-        });
-        Chain.start('SampleChain12', { value: 'false' }).catch(err => {
-            expect(err.error).to.be.equal('Value should be sample');
+        }).spec('sample2', { require: true });
+        Chain.start('SampleChain12', { value: 'false' }).catch(status => {
+            expect(status.error.length).to.be.equal(2);
+            expect(status.error[0].field).to.be.equal('sample');
+            expect(status.error[0].error.message).to.be.equal('Value should be sample');
+            expect(status.error[1].field).to.be.equal('sample2');
+            expect(status.error[1].error.message).to.be.equal('Field sample2 is required.');
             done();
         });
     });

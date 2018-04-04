@@ -8,7 +8,7 @@ export class Validators {
 
     runRequireValidation() {
         const { require, requireMessage } = this.specData;
-        const isRequired = (require instanceof Function && require()) || require;
+        const isRequired = require instanceof Function ? require() : require;
         return new Promise((resolve, reject) => {
             new this.SpecFailedException(() => {
                 const contextData = this.context.getData();

@@ -27,7 +27,7 @@ var Validators = exports.Validators = function () {
                 require = _specData.require,
                 requireMessage = _specData.requireMessage;
 
-            var isRequired = require instanceof Function && require() || require;
+            var isRequired = require instanceof Function ? require() : require;
             return new Promise(function (resolve, reject) {
                 new _this.SpecFailedException(function () {
                     var contextData = _this.context.getData();

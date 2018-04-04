@@ -39,9 +39,8 @@ export class Chain {
 
     spec(field, json = {}) {
         const spec = new Spec(field);
-        const isRequired = (json.require && json.require instanceof Function && json.require()) || json.require;
-        if (isRequired) {
-            spec.require(json.requireMessage);
+        if (json.require) {
+            spec.require(json.require, json.requireMessage);
         }
         if (json.default) {
             spec.default(json.default);

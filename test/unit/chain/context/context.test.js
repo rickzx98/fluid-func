@@ -35,15 +35,16 @@ describe('context.unit.test', () => {
     it('should validate the context values', done => {
         const context = new Context('0004');
         const spec = new Spec('field_1');
-        spec.require('Field 1 is required');
+        spec.require(true, 'Field 1 is required');
         const spec2 = new Spec('field_2');
-        spec2.require('Field 2 is required');
+        spec2.require(true, 'Field 2 is required');
 
         context.addSpec(spec);
         context.addSpec(spec2);
         context.set('field_1', 'value');
         context.runSpecs().catch(error => {
-            expect(error.message).to.be.equal('Field 2 is required'); done();
+            expect(error[0].error.message).to.be.equal('Field 2 is required');
+            done();
         });
     });
 

@@ -17,9 +17,9 @@ export default class Spec {
         this.data = { ...this.data, defaultValue };
     }
 
-    require(requireMessage) {
+    require(require, requireMessage) {
         addAction(this, 'require');
-        this.data = { ...this.data, require: true, requireMessage };
+        this.data = { ...this.data, require: require, requireMessage };
     }
 
     validate(validator = (currentValue) => new Promise()) {

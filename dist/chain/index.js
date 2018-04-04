@@ -62,9 +62,8 @@ var Chain = function () {
             var json = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
             var spec = new _spec2.default(field);
-            var isRequired = json.require && json.require instanceof Function && json.require() || json.require;
-            if (isRequired) {
-                spec.require(json.requireMessage);
+            if (json.require) {
+                spec.require(json.require, json.requireMessage);
             }
             if (json.default) {
                 spec.default(json.default);

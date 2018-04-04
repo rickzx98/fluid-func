@@ -39,9 +39,9 @@ var Spec = function () {
         }
     }, {
         key: 'require',
-        value: function require(requireMessage) {
+        value: function require(_require, requireMessage) {
             addAction(this, 'require');
-            this.data = _extends({}, this.data, { require: true, requireMessage: requireMessage });
+            this.data = _extends({}, this.data, { require: _require, requireMessage: requireMessage });
         }
     }, {
         key: 'validate',

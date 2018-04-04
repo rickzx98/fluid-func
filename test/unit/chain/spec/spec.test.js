@@ -36,7 +36,7 @@ describe('spec.unit.test', () => {
     it('should set a custom validator', done => {
         const context = new Context('_chained00');
         const spec = new Spec('validationField');
-        spec.validate((currentValue) => new Promise((resolve, reject)=> {
+        spec.validate((currentValue) => new Promise((resolve, reject) => {
             if (currentValue > 0) {
                 resolve();
             } else {
@@ -46,7 +46,7 @@ describe('spec.unit.test', () => {
         context.set('validationField', 0);
         spec.runValidation(context)
             .catch(error => {
-                expect(error).to.be.equal('Value must be greater than 0');
+                expect(error.error).to.be.equal('Value must be greater than 0');
                 done();
             });
     });

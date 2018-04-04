@@ -230,7 +230,7 @@ describe('Chain unit test', done => {
         });
     });
 
-    it.only('should executes chain with custom validator', done => {
+    it('should executes chain with custom validator', done => {
         new Chain('SampleChain11', (parameter) => {
             expect(parameter.sample()).to.be.equal('sample');
         }).spec('sample', {
@@ -264,7 +264,32 @@ describe('Chain unit test', done => {
             done();
         });
     });
+    it('should handle require as function', done => {
+        new Chain('RequireTestChain', () => {
 
+        }).spec('sample1', {
+            require: true
+        });
+
+        Chain.start('RequireTestChain')
+            .catch(stack => {
+                expect(stack.error).to.be.not.undefined;
+                expect(stack.error[0].field).to.be.equal('sample1');
+            });
+
+        new Chain('RequireTestChain2', () => {
+
+        }).spec('sample2', {
+            require: () => false
+        });
+        Chain.start('RequireTestChain2')
+        .then(()=>{
+            done();
+        })
+        .catch(stack => {
+            console.log('statc', stack);
+        });
+    });
     it('should run onStart function before starting a chain', done => {
         let ifIStarted = false;
         Chain

@@ -2,6 +2,8 @@
 
 A way to write your code with functional programming in mind
 
+[![NPM Download Stats](https://nodei.co/npm/fluid-func.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/fluid-func)
+
 ## Getting started
 
 - Installation

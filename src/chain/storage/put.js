@@ -12,7 +12,7 @@ export const putChain = (storage, exists, name, chain) => {
     if (storage[PUT_CHAIN_METHOD]) {
         storage[PUT_CHAIN_METHOD](name, chain);
     } else {
-        storage[name] = chain;
+        storage[name] = Object.assign(chain, {func: name});
     }
 };
 
@@ -71,11 +71,13 @@ export const setPutChainContextPlugin = (storage, plugin) => {
 
 const PUT_CHAIN_METHOD = 'PLUGIN_PUT_CHAIN';
 const PUT_CHAIN_CONTEXT_METHOD = 'PLUGIN_PUT_CHAIN_CONTEXT';
+
 class PutChainTypeException extends Error {
     constructor() {
         super('Put chain plugin must be a function.');
     }
 }
+
 class ChainWithTheSameNameException extends Error {
     constructor(name) {
         super('A chain with the same name as "' + name + '" has already been stored.');

@@ -65,6 +65,7 @@ export class SingleChain {
         });
     }
 }
+
 const onBeforeChain = (chain, param, resolve, reject, Context, next) => {
     try {
         const onbefore = chain.onbefore(param);
@@ -89,11 +90,16 @@ const onBeforeChain = (chain, param, resolve, reject, Context, next) => {
 };
 
 const onFailChain = (chain, error, resolve, reject, singleChain, initialParam, chains) => {
+    error = Object.assign(error, {func: chain.func});
     if (chain.onfail) {
         chain.onfail(error, () => {
             singleChain.start(initialParam, chains)
-                .then(result => { resolve(result); })
-                .catch(err => { reject(err); });
+                .then(result => {
+                    resolve(result);
+                })
+                .catch(err => {
+                    reject(err);
+                });
         }, () => {
             reject(error);
         });

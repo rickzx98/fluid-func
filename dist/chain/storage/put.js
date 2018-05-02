@@ -24,7 +24,7 @@ var putChain = exports.putChain = function putChain(storage, exists, name, chain
     if (storage[PUT_CHAIN_METHOD]) {
         storage[PUT_CHAIN_METHOD](name, chain);
     } else {
-        storage[name] = chain;
+        storage[name] = Object.assign(chain, { func: name });
     }
 };
 

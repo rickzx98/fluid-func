@@ -1,6 +1,6 @@
 import 'babel-polyfill';
 
-import { Chain } from '../../../src/chain/';
+import {Chain} from '../../../src/chain/';
 import chai from 'chai';
 
 const expect = chai.expect;
@@ -21,6 +21,7 @@ describe('Chain unit test', done => {
             });
             return sampleClass;
         }
+
         let inner = innerClass();
 
         inner.innerHello = 'hello';
@@ -63,7 +64,7 @@ describe('Chain unit test', done => {
             return context;
         });
 
-        Chain.start('SampleChain1', { hi: 'initParam' })
+        Chain.start('SampleChain1', {hi: 'initParam'})
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -91,7 +92,7 @@ describe('Chain unit test', done => {
             });
         });
 
-        Chain.start('SampleChain2', { hi: 'initParam' })
+        Chain.start('SampleChain2', {hi: 'initParam'})
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -135,8 +136,8 @@ describe('Chain unit test', done => {
                 expect(result._3rd()).to.be.equal('1st - 2nd - 3rd');
                 done();
             }).catch(() => {
-                done();
-            });
+            done();
+        });
     });
 
     it('executes chain with reducer', done => {
@@ -144,7 +145,7 @@ describe('Chain unit test', done => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
 
-        Chain.start('SampleChainReducer', { sampleArray: [1, 2, 3, 4, 5] })
+        Chain.start('SampleChainReducer', {sampleArray: [1, 2, 3, 4, 5]})
             .then(result => {
                 expect(result.value()).to.be.equal(15);
                 done();
@@ -157,9 +158,9 @@ describe('Chain unit test', done => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
         new Chain('SampleChain7', (parameter) => {
-            return { sum: 5 + parameter.value() };
+            return {sum: 5 + parameter.value()};
         });
-        Chain.start(['SampleChainReducer1', 'SampleChain7'], { sampleArray: [1, 2, 3, 4, 5] })
+        Chain.start(['SampleChainReducer1', 'SampleChain7'], {sampleArray: [1, 2, 3, 4, 5]})
             .then(result => {
                 expect(result.sum()).to.be.equal(20);
                 done();
@@ -254,8 +255,8 @@ describe('Chain unit test', done => {
                     }
                 });
             }
-        }).spec('sample2', { require: true });
-        Chain.start('SampleChain12', { value: 'false' }).catch(status => {
+        }).spec('sample2', {require: true});
+        Chain.start('SampleChain12', {value: 'false'}).catch(status => {
             expect(status.error.length).to.be.equal(2);
             expect(status.error[0].field).to.be.equal('sample');
             expect(status.error[0].error.message).to.be.equal('Value should be sample');
@@ -273,8 +274,9 @@ describe('Chain unit test', done => {
 
         Chain.start('RequireTestChain')
             .catch(stack => {
-                expect(stack.error).to.be.not.undefined;
+                console.log('stack.error.func', stack.error.func);
                 expect(stack.error[0].field).to.be.equal('sample1');
+                expect(stack.error.func).to.be.equal('RequireTestChain');
             });
 
         new Chain('RequireTestChain2', () => {
@@ -283,12 +285,12 @@ describe('Chain unit test', done => {
             require: () => false
         });
         Chain.start('RequireTestChain2')
-        .then(()=>{
-            done();
-        })
-        .catch(stack => {
-            console.log('statc', stack);
-        });
+            .then(() => {
+                done();
+            })
+            .catch(stack => {
+                console.log('statc', stack);
+            });
     });
     it('should run onStart function before starting a chain', done => {
         let ifIStarted = false;
@@ -314,9 +316,9 @@ describe('Chain unit test', done => {
                 expect(ifIStarted).to.be.false;
                 done();
             }).catch(err => {
-                console.log(err);
-                done();
-            });
+            console.log(err);
+            done();
+        });
     });
 
     it('should trigger onFail function is a chain has failed', done => {

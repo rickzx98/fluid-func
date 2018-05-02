@@ -105,6 +105,7 @@ var onBeforeChain = function onBeforeChain(chain, param, resolve, reject, Contex
 };
 
 var onFailChain = function onFailChain(chain, error, resolve, reject, singleChain, initialParam, chains) {
+    error = Object.assign(error, { func: chain.func });
     if (chain.onfail) {
         chain.onfail(error, function () {
             singleChain.start(initialParam, chains).then(function (result) {

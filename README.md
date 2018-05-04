@@ -508,3 +508,17 @@ FluidFunc.start(['_1stFunc','_2ndFunc','_1stFunc','_2ndFunc'], {
 ```
 
 Note: The cache is based on the parameter set to the Func action so enabling .strict() mode will make cache more effective.
+
+
+### Monitoring
+
+To monitor a single Func action you must do the following:
+```javascript
+    FluidFunc.config({
+        logMonitor: function(monitor) {
+              //console.log(monitor);
+        }
+    });
+```
+
+- Monitor contains the detail of every Func process including it parameters and resolved context.

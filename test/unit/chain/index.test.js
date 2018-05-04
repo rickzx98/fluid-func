@@ -5,7 +5,10 @@ import chai from 'chai';
 
 const expect = chai.expect;
 
-describe('Chain unit test', done => {
+describe('Chain unit test', () => {
+    it('should not be allowed to start if name is undefined', () => {
+        expect(Chain.start(undefined)).to.be.undefined;
+    });
     it('should allow function w/out parameter in spec.require', done => {
         function innerClass() {
             let sampleClass = {};

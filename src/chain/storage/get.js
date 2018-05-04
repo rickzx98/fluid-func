@@ -1,7 +1,9 @@
+import {CHAIN_CONFIG} from "./constants";
+
 const GET_CHAIN_METHOD = 'GET_CHAIN_PLUGIN';
 const GET_CHAIN_CONTEXT_METHOD = 'GET_CHAIN_CONTEXT_PLUGIN';
-
-import { generateUUID } from '../Util';
+const GET_CHAIN_CONFIG_LOG_MONITOR = 'logMonitor';
+import {generateUUID} from '../Util';
 
 /**
  * Gets the chain instance from storage
@@ -57,6 +59,7 @@ export function setGetChainContextPlugin(storage, plugin) {
         storage[GET_CHAIN_CONTEXT_METHOD] = plugin;
     }
 }
+
 /**
  * Overrides getChain method
  * @param storage
@@ -76,3 +79,6 @@ class GetChainTypeException extends Error {
     }
 }
 
+export const getLogMonitor = (chainConfig, storage) => {
+    return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] ? storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] : () => false;
+};

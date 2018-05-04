@@ -9,17 +9,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _storage = require('./storage/');
 
-var _context = require('./context/');
-
-var _context2 = _interopRequireDefault(_context);
-
 var _executer = require('./executer/');
 
 var _spec = require('./spec/');
 
 var _spec2 = _interopRequireDefault(_spec);
 
-var _Util = require('./Util');
+var _configurator = require('./configurator/');
+
+var _configurator2 = _interopRequireDefault(_configurator);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -131,6 +129,11 @@ var Chain = function () {
         key: 'exists',
         value: function exists(name) {
             return (0, _storage.isExists)(name);
+        }
+    }, {
+        key: 'config',
+        value: function config(props) {
+            _configurator2.default.configure(props);
         }
     }]);
 

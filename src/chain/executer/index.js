@@ -1,13 +1,14 @@
-import { addChainToStack, createExecutionStack, deleteStack, getChain } from '../storage/';
+import {addChainToStack, createExecutionStack, deleteStack, getChain} from '../storage/';
 
-import { ArrayChain } from './array-chain';
+import {ArrayChain} from './array-chain';
 import Context from '../context/';
-import { Reducer } from './reducer';
-import { Runner } from './runner';
-import { SingleChain } from './single-chain';
-import { Util } from './util';
-import { cache } from '../cache/';
-import { generateUUID } from '../Util';
+import {Reducer} from './reducer';
+import {Runner} from './runner';
+import {SingleChain} from './single-chain';
+import {Util} from './util';
+import {cache} from '../cache/';
+import {generateUUID} from '../Util';
+import {logInfo, logError} from '../logger/';
 
 export class Executer {
     start(param, chains) {
@@ -17,6 +18,6 @@ export class Executer {
             createExecutionStack,
             addChainToStack,
             deleteStack,
-            cache).start(param, chains);
+            cache, logInfo, logError).start(param, chains);
     }
 }

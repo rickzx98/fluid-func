@@ -1,0 +1,1 @@
+export const CHAIN_CONFIG = 'z__$$$_cfg__';

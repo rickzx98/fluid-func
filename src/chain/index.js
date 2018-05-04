@@ -1,9 +1,7 @@
-import { isExists, putChain } from './storage/';
-
-import Context from './context/';
-import { Executer } from './executer/';
+import {isExists, putChain} from './storage/';
+import {Executer} from './executer/';
 import Spec from './spec/';
-import { generateUUID } from './Util';
+import Configurator from './configurator/';
 
 export class Chain {
     constructor(name, action = (parameter) => {
@@ -89,5 +87,9 @@ export class Chain {
 
     static exists(name) {
         return isExists(name);
+    }
+
+    static config(props) {
+        Configurator.configure(props);
     }
 }

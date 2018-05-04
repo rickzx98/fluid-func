@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -9,7 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var SingleChain = exports.SingleChain = function () {
-    function SingleChain(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache) {
+    function SingleChain(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache, logInfo, logError) {
         _classCallCheck(this, SingleChain);
 
         this.getChain = getChain;
@@ -19,13 +19,20 @@ var SingleChain = exports.SingleChain = function () {
         this.addChainToStack = addChainToStack;
         this.stackId = stackId;
         this.cache = cache;
+        this.logInfo = logInfo;
+        this.logError = logError;
     }
 
     _createClass(SingleChain, [{
-        key: "start",
+        key: 'start',
         value: function start(initialParam, chains) {
             var _this = this;
 
+            this.logInfo('SingleChain', {
+                chain: chains,
+                message: 'Starting',
+                initialParam: initialParam
+            });
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
                     var chain = _this.getChain(chains);
@@ -36,42 +43,53 @@ var SingleChain = exports.SingleChain = function () {
                         paramAsContext.runSpecs().then(function () {
                             var param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                             onBeforeChain(chain, param, resolve, function (err) {
-                                onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
+                                onFailChain(chain, err, function (context) {
+                                    resolveChain(resolve, context, chains, _this.logInfo);
+                                }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                             }, _this.Context, function () {
                                 if (chain.reducer && param[chain.reducer]) {
                                     var array = param[chain.reducer]();
                                     new _this.Reducer(array, param, chain, _this.Context, _this.propertyToContext).reduce(function (err, result) {
                                         if (err) {
-                                            onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
+                                            onFailChain(chain, err, function (context) {
+                                                resolveChain(resolve, context, chains, _this.logInfo);
+                                            }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                                         } else {
-                                            resolve(result);
+                                            resolveChain(resolve, result, chains, _this.logInfo);
                                         }
                                     });
                                 } else {
                                     var action = chain.cachedLast ? _this.cache(_this.stackId, chains, param, chain.cachedLast, chain.action) : chain.action(param);
                                     var context = _this.Context.createContext(chain.$chainId);
+                                    _this.logInfo('SingleChain', {
+                                        chain: chains,
+                                        message: 'Starting action',
+                                        param: param
+                                    });
                                     if (action !== undefined) {
                                         if (action instanceof Promise) {
                                             action.then(function (props) {
                                                 _this.propertyToContext(context, props);
-                                                resolve(context.getData());
+                                                resolveChain(resolve, context.getData(), chains, _this.logInfo);
                                             }).catch(function (err) {
-                                                onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
+                                                onFailChain(chain, err, function (context) {
+                                                    resolveChain(resolve, context, chains, _this.logInfo);
+                                                }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                                             });
                                         } else {
                                             _this.propertyToContext(context, action);
-                                            resolve(context.getData());
+                                            resolveChain(resolve, context.getData(), chains, _this.logInfo);
                                         }
                                     } else {
-                                        resolve(context.getData());
+                                        resolveChain(resolve, context.getData(), chains, _this.logInfo);
                                     }
                                 }
                             });
                         }).catch(function (err) {
-                            onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
+                            onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                         });
                     } catch (err) {
-                        onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains);
+                        onFailChain(chain, err, resolve.bind(_this), reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                     }
                 });
             });
@@ -81,6 +99,14 @@ var SingleChain = exports.SingleChain = function () {
     return SingleChain;
 }();
 
+var resolveChain = exports.resolveChain = function resolveChain(resolve, context, chain, logInfo) {
+    logInfo('SingleChain', {
+        chain: chain,
+        message: 'Completed',
+        resolvedContext: context
+    });
+    resolve(context);
+};
 var onBeforeChain = function onBeforeChain(chain, param, resolve, reject, Context, next) {
     try {
         var onbefore = chain.onbefore(param);
@@ -104,8 +130,14 @@ var onBeforeChain = function onBeforeChain(chain, param, resolve, reject, Contex
     }
 };
 
-var onFailChain = function onFailChain(chain, error, resolve, reject, singleChain, initialParam, chains) {
+var onFailChain = function onFailChain(chain, error, resolve, reject, singleChain, initialParam, chains, logInfo, logError) {
     error = Object.assign(error, { func: chain.func });
+    logError('SingleChain', error);
+    logInfo('SingleChain', {
+        chain: chains,
+        message: 'Failed to complete',
+        params: initialParam
+    });
     if (chain.onfail) {
         chain.onfail(error, function () {
             singleChain.start(initialParam, chains).then(function (result) {

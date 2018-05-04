@@ -9,7 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Runner = exports.Runner = function () {
-    function Runner(getChain, generateUUID, Context, SingleChain, ArrayChain, Reducer, Util, createExecutionStack, addChainToStack, deleteStack, cache) {
+    function Runner(getChain, generateUUID, Context, SingleChain, ArrayChain, Reducer, Util, createExecutionStack, addChainToStack, deleteStack, cache, logInfo, logError) {
         _classCallCheck(this, Runner);
 
         this.getChain = getChain;
@@ -23,6 +23,8 @@ var Runner = exports.Runner = function () {
         this.addChainToStack = addChainToStack;
         this.deleteStack = deleteStack;
         this.cache = cache;
+        this.logInfo = logInfo;
+        this.logError = logError;
     }
 
     _createClass(Runner, [{
@@ -30,55 +32,62 @@ var Runner = exports.Runner = function () {
         value: function start(param, chains) {
             var _this = this;
 
-            var newParam = this.Util.convertToContextStructure(param, this.Context, this.generateUUID);
-            var stackId = this.createExecutionStack();
-            this.addChainToStack(stackId, newParam.$chainId());
-            if (chains instanceof Array) {
-                return new this.ArrayChain(this.getChain, this.generateUUID, this.Context, new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache)).start(newParam, chains).then(function (result) {
-                    return new Promise(function (resolve, reject) {
-                        try {
-                            _this.deleteStack(stackId);
-                            resolve(result);
-                        } catch (err) {
-                            reject(err);
-                        }
+            if (chains) {
+                var newParam = this.Util.convertToContextStructure(param, this.Context, this.generateUUID);
+                var stackId = this.createExecutionStack();
+                this.logInfo('Runner', 'Started sequence stack#' + stackId);
+                this.addChainToStack(stackId, newParam.$chainId());
+                if (chains instanceof Array) {
+                    return new this.ArrayChain(this.getChain, this.generateUUID, this.Context, new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError)).start(newParam, chains).then(function (result) {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                _this.logInfo('Runner', 'Completed stack#' + stackId);
+                                _this.deleteStack(stackId);
+                                resolve(result);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        });
+                    }).catch(function (error) {
+                        _this.logError('Runner', error);
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                _this.deleteStack(stackId);
+                                reject({
+                                    stackId: stackId,
+                                    error: error
+                                });
+                            } catch (err) {
+                                reject(err);
+                            }
+                        });
                     });
-                }).catch(function (error) {
-                    return new Promise(function (resolve, reject) {
-                        try {
-                            _this.deleteStack(stackId);
-                            reject({
-                                stackId: stackId,
-                                error: error
-                            });
-                        } catch (err) {
-                            reject(err);
-                        }
+                } else {
+                    return new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError).start(newParam, chains).then(function (result) {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                _this.logInfo('Runner', 'Completed stack#' + stackId);
+                                _this.deleteStack(stackId);
+                                resolve(result);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        });
+                    }).catch(function (error) {
+                        _this.logError('Runner', error);
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                _this.deleteStack(stackId);
+                                reject({
+                                    stackId: stackId,
+                                    error: error
+                                });
+                            } catch (err) {
+                                reject(err);
+                            }
+                        });
                     });
-                });
-            } else {
-                return new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache).start(newParam, chains).then(function (result) {
-                    return new Promise(function (resolve, reject) {
-                        try {
-                            _this.deleteStack(stackId);
-                            resolve(result);
-                        } catch (err) {
-                            reject(err);
-                        }
-                    });
-                }).catch(function (error) {
-                    return new Promise(function (resolve, reject) {
-                        try {
-                            _this.deleteStack(stackId);
-                            reject({
-                                stackId: stackId,
-                                error: error
-                            });
-                        } catch (err) {
-                            reject(err);
-                        }
-                    });
-                });
+                }
             }
         }
     }]);

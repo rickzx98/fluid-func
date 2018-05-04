@@ -1,3 +1,5 @@
+const PUT_CHAIN_METHOD = 'PLUGIN_PUT_CHAIN';
+const PUT_CHAIN_CONTEXT_METHOD = 'PLUGIN_PUT_CHAIN_CONTEXT';
 /**
  * Put chain to the storage
  * @param {*} storage
@@ -57,6 +59,10 @@ export const setPutChainPlugin = (storage, plugin) => {
 };
 
 
+export const setChainConfig = (chainConfig, storage, config)=> {
+    storage[chainConfig] = config;
+};
+
 /**
  * Overrides the put chain context function
  * @param {*} storage
@@ -69,8 +75,6 @@ export const setPutChainContextPlugin = (storage, plugin) => {
     storage[PUT_CHAIN_CONTEXT_METHOD] = plugin;
 };
 
-const PUT_CHAIN_METHOD = 'PLUGIN_PUT_CHAIN';
-const PUT_CHAIN_CONTEXT_METHOD = 'PLUGIN_PUT_CHAIN_CONTEXT';
 
 class PutChainTypeException extends Error {
     constructor() {
@@ -83,3 +87,4 @@ class ChainWithTheSameNameException extends Error {
         super('A chain with the same name as "' + name + '" has already been stored.');
     }
 }
+

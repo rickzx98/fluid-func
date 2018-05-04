@@ -10,6 +10,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var PUT_CHAIN_METHOD = 'PLUGIN_PUT_CHAIN';
+var PUT_CHAIN_CONTEXT_METHOD = 'PLUGIN_PUT_CHAIN_CONTEXT';
 /**
  * Put chain to the storage
  * @param {*} storage
@@ -70,6 +72,10 @@ var setPutChainPlugin = exports.setPutChainPlugin = function setPutChainPlugin(s
     storage[PUT_CHAIN_METHOD] = plugin;
 };
 
+var setChainConfig = exports.setChainConfig = function setChainConfig(chainConfig, storage, config) {
+    storage[chainConfig] = config;
+};
+
 /**
  * Overrides the put chain context function
  * @param {*} storage
@@ -81,9 +87,6 @@ var setPutChainContextPlugin = exports.setPutChainContextPlugin = function setPu
     }
     storage[PUT_CHAIN_CONTEXT_METHOD] = plugin;
 };
-
-var PUT_CHAIN_METHOD = 'PLUGIN_PUT_CHAIN';
-var PUT_CHAIN_CONTEXT_METHOD = 'PLUGIN_PUT_CHAIN_CONTEXT';
 
 var PutChainTypeException = function (_Error) {
     _inherits(PutChainTypeException, _Error);

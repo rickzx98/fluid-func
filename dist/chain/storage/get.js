@@ -3,11 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.getLogMonitor = undefined;
 exports.getChain = getChain;
 exports.getChainDataById = getChainDataById;
 exports.getChainContext = getChainContext;
 exports.setGetChainContextPlugin = setGetChainContextPlugin;
 exports.setGetChainPlugin = setGetChainPlugin;
+
+var _constants = require('./constants');
 
 var _Util = require('../Util');
 
@@ -19,6 +22,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var GET_CHAIN_METHOD = 'GET_CHAIN_PLUGIN';
 var GET_CHAIN_CONTEXT_METHOD = 'GET_CHAIN_CONTEXT_PLUGIN';
+var GET_CHAIN_CONFIG_LOG_MONITOR = 'logMonitor';
+
 
 /**
  * Gets the chain instance from storage
@@ -74,6 +79,7 @@ function setGetChainContextPlugin(storage, plugin) {
         storage[GET_CHAIN_CONTEXT_METHOD] = plugin;
     }
 }
+
 /**
  * Overrides getChain method
  * @param storage
@@ -98,3 +104,9 @@ var GetChainTypeException = function (_Error) {
 
     return GetChainTypeException;
 }(Error);
+
+var getLogMonitor = exports.getLogMonitor = function getLogMonitor(chainConfig, storage) {
+    return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] ? storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] : function () {
+        return false;
+    };
+};

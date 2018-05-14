@@ -1,8 +1,10 @@
-export const getPlugins = (config, props) => {
-    let plugins = {};
+export const getPlugins = (config, props, plugins = {}) => {
     if (props.plugins) {
         if (props.plugins instanceof Array) {
             props.plugins.forEach(plugin => {
+                if (!plugin.name) {
+                    throw new Error('plugin must have .name');
+                }
                 if (!plugin.action) {
                     throw new Error('plugin must have .action function');
                 }
@@ -25,8 +27,8 @@ function addPluginBefore(chains, action, name, plugins) {
     if (chains) {
         if (chains instanceof Array) {
             let chain;
-            chains.forEach(chain => {
-                let beforeChain = `before_${chain}`;
+            chains.forEach(_chain => {
+                let beforeChain = `before_${_chain}`;
                 if (!plugins[beforeChain]) {
                     plugins[beforeChain] = [];
                 }
@@ -42,8 +44,8 @@ function addPluginAfter(chains, action, name, plugins) {
     if (chains) {
         if (chains instanceof Array) {
             let chain;
-            chains.forEach(chain => {
-                let afterChain = `after_${chain}`;
+            chains.forEach(_chain => {
+                let afterChain = `after_${_chain}`;
                 if (!plugins[afterChain]) {
                     plugins[afterChain] = [];
                 }

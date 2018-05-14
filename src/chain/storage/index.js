@@ -101,9 +101,6 @@ export function isExists(name) {
 }
 
 export function setChainConfig(config) {
-    if (getPlugins()) {
-        let plugin = Object.assign(config.plugins || {}, getPlugins());
-    }
     _setChainConfig(CHAIN_CONFIG, storage, config);
 }
 

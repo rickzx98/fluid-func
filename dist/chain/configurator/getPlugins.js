@@ -4,10 +4,14 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var getPlugins = exports.getPlugins = function getPlugins(config, props) {
-    var plugins = {};
+    var plugins = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     if (props.plugins) {
         if (props.plugins instanceof Array) {
             props.plugins.forEach(function (plugin) {
+                if (!plugin.name) {
+                    throw new Error('plugin must have .name');
+                }
                 if (!plugin.action) {
                     throw new Error('plugin must have .action function');
                 }
@@ -29,8 +33,8 @@ function addPluginBefore(chains, action, name, plugins) {
     if (chains) {
         if (chains instanceof Array) {
             var chain = void 0;
-            chains.forEach(function (chain) {
-                var beforeChain = 'before_' + chain;
+            chains.forEach(function (_chain) {
+                var beforeChain = 'before_' + _chain;
                 if (!plugins[beforeChain]) {
                     plugins[beforeChain] = [];
                 }
@@ -46,8 +50,8 @@ function addPluginAfter(chains, action, name, plugins) {
     if (chains) {
         if (chains instanceof Array) {
             var chain = void 0;
-            chains.forEach(function (chain) {
-                var afterChain = 'after_' + chain;
+            chains.forEach(function (_chain) {
+                var afterChain = 'after_' + _chain;
                 if (!plugins[afterChain]) {
                     plugins[afterChain] = [];
                 }

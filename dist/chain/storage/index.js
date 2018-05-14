@@ -115,9 +115,6 @@ function isExists(name) {
 }
 
 function setChainConfig(config) {
-    if (getPlugins()) {
-        var plugin = Object.assign(config.plugins || {}, getPlugins());
-    }
     (0, _put.setChainConfig)(_constants.CHAIN_CONFIG, storage, config);
 }
 

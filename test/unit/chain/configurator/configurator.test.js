@@ -5,6 +5,14 @@ import { getPlugins } from '../../../../src/chain/configurator/getPlugins';
 
 describe('configurator.unit.test', () => {
 
+    it('throws an error when plugin is missing .name', () => {
+        expect(() => {
+            getPlugins({}, {
+                plugins: [{}]
+            });
+        }).to.throw('plugin must have .name');
+    });
+
     it('throw error when plugin is missing action', () => {
         expect(() => {
             getPlugins({}, {
@@ -62,6 +70,35 @@ describe('configurator.unit.test', () => {
             config.plugins[key][0].action();
         });
         expect(counter).to.be.equal(3);
+    });
+
+    it('should extends existing plugins', () => {
+        const config = {};
+        let plugins = {
+            'before_everything': [{
+                name: 'sample',
+                action: () => { }
+            }]
+        };
+        getPlugins(config, {
+            plugins: [{
+                name: 'sample',
+                action: () => { },
+                before: ['everything', 'everything2'],
+                after: ['everything']
+            }, {
+                name: 'sample2',
+                action: () => { },
+                before: ['everything']
+            }]
+        }, plugins);
+        expect(config.plugins.after_everything).to.be.not.undefined;
+        expect(config.plugins.before_everything).to.be.not.undefined;
+        expect(config.plugins.before_everything2).to.be.not.undefined;
+
+        expect(config.plugins.after_everything.length).to.be.equal(1);
+        expect(config.plugins.before_everything.length).to.be.equal(3);
+        expect(config.plugins.before_everything2.length).to.be.equal(1);
     });
 
 });

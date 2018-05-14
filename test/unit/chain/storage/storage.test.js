@@ -17,16 +17,6 @@ import {
 import { expect } from 'chai';
 
 describe('storage.unit.test', () => {
-    it('should be able to extend plugins', () => {
-        setChainConfig({
-            plugins: { name: 'sample' }
-        });
-        setChainConfig({
-            plugins: { name2: 'sample2' }
-        });
-        expect(getPlugins().name).to.be.equal('sample');
-        expect(getPlugins().name2).to.be.equal('sample2');
-    })
     it('should put chain config', () => {
         setChainConfig({
             logMonitor: () => true,

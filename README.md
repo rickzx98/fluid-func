@@ -521,4 +521,15 @@ To monitor a single Func action you must do the following:
     });
 ```
 
+
+### Authors
+
+* **Jerico de Guzman** - [LinkedIn](https://www.linkedin.com/in/jerico-de-guzman-35126657)
+
+See also the list of [contributors](https://github.com/rickzx98/fluid-chains/contributors) who participated in this project.
+
+### License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
 - Monitor contains the detail of every Func process including it parameters and resolved context.

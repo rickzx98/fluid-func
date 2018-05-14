@@ -1,0 +1,1 @@
+import { getPlugins } from '../storage';

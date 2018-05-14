@@ -14,7 +14,7 @@ export const putChain = (storage, exists, name, chain) => {
     if (storage[PUT_CHAIN_METHOD]) {
         storage[PUT_CHAIN_METHOD](name, chain);
     } else {
-        storage[name] = Object.assign(chain, {func: name});
+        storage[name] = Object.assign(chain, { func: name });
     }
 };
 
@@ -59,7 +59,7 @@ export const setPutChainPlugin = (storage, plugin) => {
 };
 
 
-export const setChainConfig = (chainConfig, storage, config)=> {
+export const setChainConfig = (chainConfig, storage, config) => {
     storage[chainConfig] = config;
 };
 

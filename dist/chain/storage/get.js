@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getLogMonitor = undefined;
+exports.getPlugins = exports.getLogMonitor = undefined;
 exports.getChain = getChain;
 exports.getChainDataById = getChainDataById;
 exports.getChainContext = getChainContext;
@@ -23,7 +23,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var GET_CHAIN_METHOD = 'GET_CHAIN_PLUGIN';
 var GET_CHAIN_CONTEXT_METHOD = 'GET_CHAIN_CONTEXT_PLUGIN';
 var GET_CHAIN_CONFIG_LOG_MONITOR = 'logMonitor';
-
+var GET_CHAIN_CONFIG_PLUGINS = 'plugins';
 
 /**
  * Gets the chain instance from storage
@@ -109,4 +109,8 @@ var getLogMonitor = exports.getLogMonitor = function getLogMonitor(chainConfig, 
     return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] ? storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] : function () {
         return false;
     };
+};
+
+var getPlugins = exports.getPlugins = function getPlugins(chainConfig, storage) {
+    return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_PLUGINS] ? storage[chainConfig][GET_CHAIN_CONFIG_PLUGINS] : undefined;
 };

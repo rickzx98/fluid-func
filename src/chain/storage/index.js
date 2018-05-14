@@ -1,18 +1,19 @@
 import {
+    getLogMonitor as _getLogMonitor,
+    getPlugins as _getPlugins,
     getChain as gc,
     getChainContext as gcc,
-    getChainDataById as gcdbi,
-    getLogMonitor as _getLogMonitor
+    getChainDataById as gcdbi
 } from './get';
 import {
+    setChainConfig as _setChainConfig,
     putChain as pc,
-    putChainContext as pcc,
-    setChainConfig as _setChainConfig
+    putChainContext as pcc
 } from './put';
 
-import {exists} from './exists';
-import {generateUUID} from '../Util';
-import {CHAIN_CONFIG} from './constants';
+import { CHAIN_CONFIG } from './constants';
+import { exists } from './exists';
+import { generateUUID } from '../Util';
 
 if (global && !global.__$fs__) {
     global.__$fs__ = {};
@@ -100,9 +101,16 @@ export function isExists(name) {
 }
 
 export function setChainConfig(config) {
+    if (getPlugins()) {
+        let plugin = Object.assign(config.plugins || {}, getPlugins());
+    }
     _setChainConfig(CHAIN_CONFIG, storage, config);
 }
 
 export function getLogMonitor() {
     return _getLogMonitor(CHAIN_CONFIG, storage);
+}
+
+export function getPlugins() {
+    return _getPlugins(CHAIN_CONFIG, storage);
 }

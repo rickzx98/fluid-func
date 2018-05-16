@@ -30,12 +30,14 @@ export class SingleChain {
                         let param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                         this.executeBefore(chain.func, param)
                             .then(resolvedPluginData => {
-                                const newContext = new this.Context('temp');
-                                setResolvedContexts(resolvedPluginData, newContext);
-                                param = Object.assign(param, newContext.getData());
+                                if (resolvedPluginData) {
+                                    const newContext = new this.Context('_before_temp');
+                                    setResolvedContexts(resolvedPluginData, newContext);
+                                    param = Object.assign(param, newContext.getData());
+                                }
                                 onBeforeChain(chain, param, resolve, (err) => {
                                     onFailChain(chain, err, (context) => {
-                                        resolveChain(resolve, context, chains, this.logInfo);
+                                        resolveChain(resolve, context, chains, this.logInfo, this.executeAfter, this.Context);
                                     }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
                                 }, this.Context, () => {
                                     if (chain.reducer && param[chain.reducer]) {
@@ -45,10 +47,10 @@ export class SingleChain {
                                             .reduce((err, result) => {
                                                 if (err) {
                                                     onFailChain(chain, err, (context) => {
-                                                        resolveChain(resolve, context, chains, this.logInfo);
+                                                        resolveChain(resolve, context, chains, this.logInfo, this.executeAfter, this.Context);
                                                     }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
                                                 } else {
-                                                    resolveChain(resolve, result, chains, this.logInfo);
+                                                    resolveChain(resolve, result, chains, this.logInfo, this.executeAfter, this.Context);
                                                 }
                                             });
                                     } else {
@@ -64,18 +66,18 @@ export class SingleChain {
                                             if (action instanceof Promise) {
                                                 action.then(props => {
                                                     this.propertyToContext(context, props);
-                                                    resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                                    resolveChain(resolve, context.getData(), chains, this.logInfo, this.executeAfter, this.Context);
                                                 }).catch(err => {
                                                     onFailChain(chain, err, (context) => {
                                                         resolveChain(resolve, context, chains, this.logInfo);
-                                                    }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
+                                                    }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError, this.executeAfter, this.Context);
                                                 });
                                             } else {
                                                 this.propertyToContext(context, action);
-                                                resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                                resolveChain(resolve, context.getData(), chains, this.logInfo, this.executeAfter, this.Context);
                                             }
                                         } else {
-                                            resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                            resolveChain(resolve, context.getData(), chains, this.logInfo, this.executeAfter, this.Context);
                                         }
                                     }
                                 });
@@ -93,13 +95,22 @@ export class SingleChain {
     }
 }
 
-export const resolveChain = (resolve, context, chain, logInfo) => {
+export const resolveChain = (resolve, context, chain, logInfo, executeAfter, Context) => {
     logInfo('SingleChain', {
         chain,
         message: 'Completed',
         resolvedContext: context
     });
-    resolve(context);
+    executeAfter(chain, context).then(resolvedPluginData => {
+        if (resolvedPluginData) {
+            const newContext = new Context('_after_temp');
+            setResolvedContexts(resolvedPluginData, newContext);
+            context = Object.assign(context, newContext.getData());
+        }
+        resolve(context);
+    }).catch(err => {
+        throw err;
+    });
 };
 const onBeforeChain = (chain, param, resolve, reject, Context, next) => {
     try {

@@ -6,6 +6,27 @@ import chai from 'chai';
 const expect = chai.expect;
 
 describe('Chain unit test', () => {
+    it('should run after plugin', done => {
+        Chain.config({
+            plugins: [
+                {
+                    name: 'Sample1',
+                    action: () => {
+                        return { something: 'nice' };
+                    },
+                    after: ['chainBefore2']
+                }
+            ]
+        });
+        Chain.create('chainBefore2').onStart((context) => {
+            expect(context.Sample1).to.be.undefined;
+        }).connect('chainBefore3').onStart((context) => {
+            expect(context.Sample1).to.be.not.undefined;
+            expect(context.Sample1('something')).to.be.equal('nice');
+        }).execute({ main: 'lo' }).then(() => {
+            done();
+        }).catch(err => { console.error(err) });
+    });
     it('should run before plugin', done => {
         Chain.config({
             plugins: [

@@ -18,7 +18,7 @@ var executeActions = function executeActions(context, plugins) {
             if (action instanceof Promise) {
                 action.then(function (data) {
                     resolvedContext = _extends({}, resolvedContext);
-                    resolvedContext[plugin.name] = _extends({}, data);
+                    resolvedContext[plugin.name] = data;
                     index++;
                     executeActions(context, plugins, resolvedContext, index, done);
                 }).catch(function (err) {
@@ -27,7 +27,7 @@ var executeActions = function executeActions(context, plugins) {
             } else {
                 if (action) {
                     resolvedContext = _extends({}, resolvedContext);
-                    resolvedContext[plugin.name] = _extends({}, action);
+                    resolvedContext[plugin.name] = action;
                 }
                 index++;
                 executeActions(context, plugins, resolvedContext, index, done);

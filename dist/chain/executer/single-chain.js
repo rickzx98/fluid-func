@@ -45,12 +45,14 @@ var SingleChain = exports.SingleChain = function () {
                         paramAsContext.runSpecs().then(function () {
                             var param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                             _this.executeBefore(chain.func, param).then(function (resolvedPluginData) {
-                                var newContext = new _this.Context('temp');
-                                setResolvedContexts(resolvedPluginData, newContext);
-                                param = Object.assign(param, newContext.getData());
+                                if (resolvedPluginData) {
+                                    var newContext = new _this.Context('_before_temp');
+                                    setResolvedContexts(resolvedPluginData, newContext);
+                                    param = Object.assign(param, newContext.getData());
+                                }
                                 onBeforeChain(chain, param, resolve, function (err) {
                                     onFailChain(chain, err, function (context) {
-                                        resolveChain(resolve, context, chains, _this.logInfo);
+                                        resolveChain(resolve, context, chains, _this.logInfo, _this.executeAfter, _this.Context);
                                     }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                                 }, _this.Context, function () {
                                     if (chain.reducer && param[chain.reducer]) {
@@ -58,10 +60,10 @@ var SingleChain = exports.SingleChain = function () {
                                         new _this.Reducer(array, param, chain, _this.Context, _this.propertyToContext).reduce(function (err, result) {
                                             if (err) {
                                                 onFailChain(chain, err, function (context) {
-                                                    resolveChain(resolve, context, chains, _this.logInfo);
+                                                    resolveChain(resolve, context, chains, _this.logInfo, _this.executeAfter, _this.Context);
                                                 }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
                                             } else {
-                                                resolveChain(resolve, result, chains, _this.logInfo);
+                                                resolveChain(resolve, result, chains, _this.logInfo, _this.executeAfter, _this.Context);
                                             }
                                         });
                                     } else {
@@ -76,18 +78,18 @@ var SingleChain = exports.SingleChain = function () {
                                             if (action instanceof Promise) {
                                                 action.then(function (props) {
                                                     _this.propertyToContext(context, props);
-                                                    resolveChain(resolve, context.getData(), chains, _this.logInfo);
+                                                    resolveChain(resolve, context.getData(), chains, _this.logInfo, _this.executeAfter, _this.Context);
                                                 }).catch(function (err) {
                                                     onFailChain(chain, err, function (context) {
                                                         resolveChain(resolve, context, chains, _this.logInfo);
-                                                    }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError);
+                                                    }, reject.bind(_this), _this, initialParam, chains, _this.logInfo, _this.logError, _this.executeAfter, _this.Context);
                                                 });
                                             } else {
                                                 _this.propertyToContext(context, action);
-                                                resolveChain(resolve, context.getData(), chains, _this.logInfo);
+                                                resolveChain(resolve, context.getData(), chains, _this.logInfo, _this.executeAfter, _this.Context);
                                             }
                                         } else {
-                                            resolveChain(resolve, context.getData(), chains, _this.logInfo);
+                                            resolveChain(resolve, context.getData(), chains, _this.logInfo, _this.executeAfter, _this.Context);
                                         }
                                     }
                                 });
@@ -108,13 +110,22 @@ var SingleChain = exports.SingleChain = function () {
     return SingleChain;
 }();
 
-var resolveChain = exports.resolveChain = function resolveChain(resolve, context, chain, logInfo) {
+var resolveChain = exports.resolveChain = function resolveChain(resolve, context, chain, logInfo, executeAfter, Context) {
     logInfo('SingleChain', {
         chain: chain,
         message: 'Completed',
         resolvedContext: context
     });
-    resolve(context);
+    executeAfter(chain, context).then(function (resolvedPluginData) {
+        if (resolvedPluginData) {
+            var newContext = new Context('_after_temp');
+            setResolvedContexts(resolvedPluginData, newContext);
+            context = Object.assign(context, newContext.getData());
+        }
+        resolve(context);
+    }).catch(function (err) {
+        throw err;
+    });
 };
 var onBeforeChain = function onBeforeChain(chain, param, resolve, reject, Context, next) {
     try {

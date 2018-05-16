@@ -521,6 +521,47 @@ To monitor a single Func action you must do the following:
     });
 ```
 
+- Monitor contains the detail of every Func process including it parameters and resolved context.
+
+### Plugins
+
+Field        | Type     | Description                                               | Required
+-------------|----------|-----------------------------------------------------------|---------------------
+name         | String   | Name of the plugin                                        | true
+action       | Function | Action that will run                                      | true
+before/after | array    | list of Func names the action will invoke to before/after | atleast one of either
+
+
+- Plugin.action: Function(context: Context) - Will handle the plugin execution. All return types will be merged to the Context parameter.
+- Plugin.before - Will run the plugin before executing the Func
+- Plugin.after - Will run the plugin after the Func completes
+
+```javascript
+    FluidFunc.config({
+        plugins: [
+            {name:'AwesomePlugin', 
+            action: function(context) {
+                return "hello";
+            },
+            before:['Func1'],
+            after:['Func2']
+            }
+        ]
+    });
+
+    FluidFunc.create('Func1').onStart(context=> {
+        // plugin was triggered before Func1
+        context.AwesomePlugin() // hello
+    });
+
+    FluidFunc.create('Func2').onStart(context=> {
+    })
+    .execute(context=> { 
+        // plugin was triggered after Func2
+        context.AwesomePlugin() // hello
+    });
+
+```
 
 ### Authors
 
@@ -531,5 +572,3 @@ See also the list of [contributors](https://github.com/rickzx98/fluid-chains/con
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-- Monitor contains the detail of every Func process including it parameters and resolved context.

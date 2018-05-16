@@ -35,6 +35,11 @@ describe('plugin.unit.test', () => {
                         resolve({ hi: 'hello!' });
                     }),
                     before: ['chain1']
+                },
+                {
+                    name: 'samplePlugin3',
+                    action: () => "sample3",
+                    before: ['chain1']
                 }
             ]
         })
@@ -43,6 +48,7 @@ describe('plugin.unit.test', () => {
             .then(resolve => {
                 expect(resolve.samplePlugin.hello).to.be.equal('world!');
                 expect(resolve.samplePlugin2.hi).to.be.equal('hello!');
+                expect(resolve.samplePlugin3).to.be.equal('sample3');
                 done();
             });
     });
@@ -62,6 +68,11 @@ describe('plugin.unit.test', () => {
                         resolve({ hi: 'hello!' });
                     }),
                     after: ['chain1']
+                },
+                {
+                    name: 'samplePlugin3',
+                    action: () => "sample3",
+                    after: ['chain1']
                 }
             ]
         })
@@ -70,6 +81,7 @@ describe('plugin.unit.test', () => {
             .then(resolve => {
                 expect(resolve.samplePlugin.hello).to.be.equal('world!');
                 expect(resolve.samplePlugin2.hi).to.be.equal('hello!');
+                expect(resolve.samplePlugin3).to.be.equal('sample3');
                 done();
             });
 

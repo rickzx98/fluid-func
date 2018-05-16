@@ -6,14 +6,14 @@ const executeActions = (context, plugins, resolvedContext = {}, index = 0, done)
             if (action instanceof Promise) {
                 action.then((data) => {
                     resolvedContext = { ...resolvedContext };
-                    resolvedContext[plugin.name] = { ...data };
+                    resolvedContext[plugin.name] = data;
                     index++;
                     executeActions(context, plugins, resolvedContext, index, done);
                 }).catch(err => { done(err); });
             } else {
                 if (action) {
                     resolvedContext = { ...resolvedContext };
-                    resolvedContext[plugin.name] = { ...action };
+                    resolvedContext[plugin.name] = action;
                 }
                 index++;
                 executeActions(context, plugins, resolvedContext, index, done);

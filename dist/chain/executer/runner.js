@@ -9,7 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Runner = exports.Runner = function () {
-    function Runner(getChain, generateUUID, Context, SingleChain, ArrayChain, Reducer, Util, createExecutionStack, addChainToStack, deleteStack, cache, logInfo, logError) {
+    function Runner(getChain, generateUUID, Context, SingleChain, ArrayChain, Reducer, Util, createExecutionStack, addChainToStack, deleteStack, cache, logInfo, logError, executeAfter, executeBefore) {
         _classCallCheck(this, Runner);
 
         this.getChain = getChain;
@@ -25,6 +25,8 @@ var Runner = exports.Runner = function () {
         this.cache = cache;
         this.logInfo = logInfo;
         this.logError = logError;
+        this.executeAfter = executeAfter;
+        this.executeBefore = executeBefore;
     }
 
     _createClass(Runner, [{
@@ -38,7 +40,7 @@ var Runner = exports.Runner = function () {
                 this.logInfo('Runner', 'Started sequence stack#' + stackId);
                 this.addChainToStack(stackId, newParam.$chainId());
                 if (chains instanceof Array) {
-                    return new this.ArrayChain(this.getChain, this.generateUUID, this.Context, new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError)).start(newParam, chains).then(function (result) {
+                    return new this.ArrayChain(this.getChain, this.generateUUID, this.Context, new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError, this.executeAfter, this.executeBefore)).start(newParam, chains).then(function (result) {
                         return new Promise(function (resolve, reject) {
                             try {
                                 _this.logInfo('Runner', 'Completed stack#' + stackId);
@@ -63,7 +65,7 @@ var Runner = exports.Runner = function () {
                         });
                     });
                 } else {
-                    return new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError).start(newParam, chains).then(function (result) {
+                    return new this.SingleChain(this.getChain, this.Context, propertyToContext, this.Reducer, this.addChainToStack, stackId, this.cache, this.logInfo, this.logError, this.executeAfter, this.executeBefore).start(newParam, chains).then(function (result) {
                         return new Promise(function (resolve, reject) {
                             try {
                                 _this.logInfo('Runner', 'Completed stack#' + stackId);

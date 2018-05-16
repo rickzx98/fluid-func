@@ -1,5 +1,5 @@
 export class SingleChain {
-    constructor(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache, logInfo, logError) {
+    constructor(getChain, Context, propertyToContext, Reducer, addChainToStack, stackId, cache, logInfo, logError, executeAfter, executeBefore) {
         this.getChain = getChain;
         this.Context = Context;
         this.propertyToContext = propertyToContext;
@@ -9,6 +9,8 @@ export class SingleChain {
         this.cache = cache;
         this.logInfo = logInfo;
         this.logError = logError;
+        this.executeAfter = executeAfter;
+        this.executeBefore = executeBefore;
     }
 
     start(initialParam, chains) {
@@ -25,54 +27,61 @@ export class SingleChain {
                     const paramAsContext = new this.Context(initialParam.$chainId());
                     addSpecToContext(chain.specs, paramAsContext);
                     paramAsContext.runSpecs().then(() => {
-                        const param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
-                        onBeforeChain(chain, param, resolve, (err) => {
-                            onFailChain(chain, err, (context) => {
-                                resolveChain(resolve, context, chains, this.logInfo);
-                            }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
-                        }, this.Context, () => {
-                            if (chain.reducer && param[chain.reducer]) {
-                                const array = param[chain.reducer]();
-                                new this.Reducer(array, param, chain,
-                                    this.Context, this.propertyToContext)
-                                    .reduce((err, result) => {
-                                        if (err) {
-                                            onFailChain(chain, err, (context) => {
-                                                resolveChain(resolve, context, chains, this.logInfo);
-                                            }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
-                                        } else {
-                                            resolveChain(resolve, result, chains, this.logInfo);
-                                        }
-                                    });
-                            } else {
-                                const action = chain.cachedLast ? this.cache(this.stackId, chains,
-                                    param, chain.cachedLast, chain.action) : chain.action(param);
-                                const context = this.Context.createContext(chain.$chainId);
-                                this.logInfo('SingleChain', {
-                                    chain: chains,
-                                    message: 'Starting action',
-                                    param
-                                });
-                                if (action !== undefined) {
-                                    if (action instanceof Promise) {
-                                        action.then(props => {
-                                            this.propertyToContext(context, props);
-                                            resolveChain(resolve, context.getData(), chains, this.logInfo);
-                                        }).catch(err => {
-                                            onFailChain(chain, err, (context) => {
-                                                resolveChain(resolve, context, chains, this.logInfo);
-                                            }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
-                                        });
+                        let param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
+                        this.executeBefore(chain.func, param)
+                            .then(resolvedPluginData => {
+                                const newContext = new this.Context('temp');
+                                setResolvedContexts(resolvedPluginData, newContext);
+                                param = Object.assign(param, newContext.getData());
+                                onBeforeChain(chain, param, resolve, (err) => {
+                                    onFailChain(chain, err, (context) => {
+                                        resolveChain(resolve, context, chains, this.logInfo);
+                                    }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
+                                }, this.Context, () => {
+                                    if (chain.reducer && param[chain.reducer]) {
+                                        const array = param[chain.reducer]();
+                                        new this.Reducer(array, param, chain,
+                                            this.Context, this.propertyToContext)
+                                            .reduce((err, result) => {
+                                                if (err) {
+                                                    onFailChain(chain, err, (context) => {
+                                                        resolveChain(resolve, context, chains, this.logInfo);
+                                                    }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
+                                                } else {
+                                                    resolveChain(resolve, result, chains, this.logInfo);
+                                                }
+                                            });
                                     } else {
-                                        this.propertyToContext(context, action);
-                                        resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                        const action = chain.cachedLast ? this.cache(this.stackId, chains,
+                                            param, chain.cachedLast, chain.action) : chain.action(param);
+                                        const context = this.Context.createContext(chain.$chainId);
+                                        this.logInfo('SingleChain', {
+                                            chain: chains,
+                                            message: 'Starting action',
+                                            param
+                                        });
+                                        if (action !== undefined) {
+                                            if (action instanceof Promise) {
+                                                action.then(props => {
+                                                    this.propertyToContext(context, props);
+                                                    resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                                }).catch(err => {
+                                                    onFailChain(chain, err, (context) => {
+                                                        resolveChain(resolve, context, chains, this.logInfo);
+                                                    }, reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
+                                                });
+                                            } else {
+                                                this.propertyToContext(context, action);
+                                                resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                            }
+                                        } else {
+                                            resolveChain(resolve, context.getData(), chains, this.logInfo);
+                                        }
                                     }
-                                } else {
-                                    resolveChain(resolve, context.getData(), chains, this.logInfo);
-                                }
-                            }
-                        });
-
+                                });
+                            }).catch(err => {
+                                onFailChain(chain, err, resolve.bind(this), reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
+                            })
                     }).catch(err => {
                         onFailChain(chain, err, resolve.bind(this), reject.bind(this), this, initialParam, chains, this.logInfo, this.logError);
                     });
@@ -116,7 +125,7 @@ const onBeforeChain = (chain, param, resolve, reject, Context, next) => {
 };
 
 const onFailChain = (chain, error, resolve, reject, singleChain, initialParam, chains, logInfo, logError) => {
-    error = Object.assign(error, {func: chain.func});
+    error = Object.assign(error, { func: chain.func });
     logError('SingleChain', error);
     logInfo('SingleChain', {
         chain: chains,
@@ -157,5 +166,16 @@ const addSpecToContext = (specs, context) => {
         specs.forEach(spec => {
             context.addSpec(spec);
         });
+    }
+};
+
+const setResolvedContexts = (resolvedContext, context) => {
+    if (resolvedContext) {
+        for (let field in resolvedContext) {
+            if (resolvedContext.hasOwnProperty(field)) {
+                const fieldData = resolvedContext[field];
+                context.set(field, fieldData);
+            }
+        }
     }
 };

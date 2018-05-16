@@ -9,6 +9,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _storage = require('../storage/');
 
+var _plugins = require('../plugins/');
+
+var _logger = require('../logger/');
+
 var _arrayChain = require('./array-chain');
 
 var _context = require('../context/');
@@ -27,8 +31,6 @@ var _cache = require('../cache/');
 
 var _Util = require('../Util');
 
-var _logger = require('../logger/');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41,7 +43,7 @@ var Executer = exports.Executer = function () {
     _createClass(Executer, [{
         key: 'start',
         value: function start(param, chains) {
-            return new _runner.Runner(_storage.getChain, _Util.generateUUID, _context2.default, _singleChain.SingleChain, _arrayChain.ArrayChain, _reducer.Reducer, _util.Util, _storage.createExecutionStack, _storage.addChainToStack, _storage.deleteStack, _cache.cache, _logger.logInfo, _logger.logError).start(param, chains);
+            return new _runner.Runner(_storage.getChain, _Util.generateUUID, _context2.default, _singleChain.SingleChain, _arrayChain.ArrayChain, _reducer.Reducer, _util.Util, _storage.createExecutionStack, _storage.addChainToStack, _storage.deleteStack, _cache.cache, _logger.logInfo, _logger.logError, _plugins.executeAfter, _plugins.executeBefore).start(param, chains);
         }
     }]);
 

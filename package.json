@@ -49,5 +49,8 @@
         "mocha": "^3.4.1",
         "sinon": "^2.2.0",
         "babel-polyfill": "^6.23.0"
+    },
+    "dependencies": {
+        "npm": "^6.0.1"
     }
 }

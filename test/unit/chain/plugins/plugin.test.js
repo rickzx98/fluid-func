@@ -7,6 +7,18 @@ import Context from '../../../../src/chain/context';
 import { expect } from 'chai';
 
 describe('plugin.unit.test', () => {
+    it('should resolve even before is missing', done => {
+        executeBefore('chain1', {})
+            .then(resolve => {
+                done();
+            });
+    });
+    it('should resolve even after is missing', done => {
+        executeAfter('chain1', {})
+            .then(resolve => {
+                done();
+            });
+    });
     it('should run before plugins', done => {
         Configurator.configure({
             plugins: [
@@ -29,8 +41,8 @@ describe('plugin.unit.test', () => {
         const ctx = new Context('chain1');
         executeBefore('chain1', ctx)
             .then(resolve => {
-                expect(resolve.hello).to.be.equal('world!');
-                expect(resolve.hi).to.be.equal('hello!');
+                expect(resolve.samplePlugin.hello).to.be.equal('world!');
+                expect(resolve.samplePlugin2.hi).to.be.equal('hello!');
                 done();
             });
     });
@@ -56,8 +68,8 @@ describe('plugin.unit.test', () => {
         const ctx = new Context('chain1');
         executeBefore('chain1', ctx)
             .then(resolve => {
-                expect(resolve.hello).to.be.equal('world!');
-                expect(resolve.hi).to.be.equal('hello!');
+                expect(resolve.samplePlugin.hello).to.be.equal('world!');
+                expect(resolve.samplePlugin2.hi).to.be.equal('hello!');
                 done();
             });
 

@@ -5,13 +5,15 @@ const executeActions = (context, plugins, resolvedContext = {}, index = 0, done)
             const action = plugin.action(context);
             if (action instanceof Promise) {
                 action.then((data) => {
-                    resolvedContext = { ...resolvedContext, ...data };
+                    resolvedContext = { ...resolvedContext };
+                    resolvedContext[plugin.name] = { ...data };
                     index++;
                     executeActions(context, plugins, resolvedContext, index, done);
                 }).catch(err => { done(err); });
             } else {
                 if (action) {
-                    resolvedContext = { ...resolvedContext, ...action };
+                    resolvedContext = { ...resolvedContext };
+                    resolvedContext[plugin.name] = { ...action };
                 }
                 index++;
                 executeActions(context, plugins, resolvedContext, index, done);
@@ -26,7 +28,7 @@ const executeActions = (context, plugins, resolvedContext = {}, index = 0, done)
 
 export const executeBeforePlugins = (chain, context, plugins) => {
     const beforeChain = `before_${chain}`;
-    const chainPlugins = plugins[beforeChain];
+    const chainPlugins = plugins ? plugins[beforeChain] : undefined;
     return new Promise((resolve, reject) => {
         if (chainPlugins) {
             executeActions(context, chainPlugins, {}, 0, (err, resolvedContext) => {
@@ -36,6 +38,8 @@ export const executeBeforePlugins = (chain, context, plugins) => {
                     resolve(resolvedContext)
                 }
             });
+        } else {
+            resolve();
         }
     });
 };

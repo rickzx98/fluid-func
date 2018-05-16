@@ -17,7 +17,8 @@ var executeActions = function executeActions(context, plugins) {
             var action = plugin.action(context);
             if (action instanceof Promise) {
                 action.then(function (data) {
-                    resolvedContext = _extends({}, resolvedContext, data);
+                    resolvedContext = _extends({}, resolvedContext);
+                    resolvedContext[plugin.name] = _extends({}, data);
                     index++;
                     executeActions(context, plugins, resolvedContext, index, done);
                 }).catch(function (err) {
@@ -25,7 +26,8 @@ var executeActions = function executeActions(context, plugins) {
                 });
             } else {
                 if (action) {
-                    resolvedContext = _extends({}, resolvedContext, action);
+                    resolvedContext = _extends({}, resolvedContext);
+                    resolvedContext[plugin.name] = _extends({}, action);
                 }
                 index++;
                 executeActions(context, plugins, resolvedContext, index, done);
@@ -40,7 +42,7 @@ var executeActions = function executeActions(context, plugins) {
 
 var executeAfterPlugins = exports.executeAfterPlugins = function executeAfterPlugins(chain, context, plugins) {
     var afterChain = "after_" + chain;
-    var chainPlugins = plugins[afterChain];
+    var chainPlugins = plugins ? plugins[afterChain] : undefined;
     return new Promise(function (resolve, reject) {
         if (chainPlugins) {
             executeActions(context, chainPlugins, {}, 0, function (err, resolvedContext) {
@@ -50,6 +52,8 @@ var executeAfterPlugins = exports.executeAfterPlugins = function executeAfterPlu
                     resolve(resolvedContext);
                 }
             });
+        } else {
+            resolve();
         }
     });
 };

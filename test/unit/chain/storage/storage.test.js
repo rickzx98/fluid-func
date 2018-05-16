@@ -1,23 +1,29 @@
 import 'babel-polyfill';
-import {expect} from 'chai';
+
 import {
-    putChain,
-    putChainContext,
-    setPutChainContextPlugin,
-    setPutChainPlugin,
     getChain,
     getChainContext,
+    getLogMonitor,
+    getPlugins,
+    putChain,
+    putChainContext,
+    setChainConfig,
     setGetChainContextPlugin,
     setGetChainPlugin,
-    setChainConfig,
-    getLogMonitor
+    setPutChainContextPlugin,
+    setPutChainPlugin
 } from '../../../../src/chain/storage/';
+
+import { expect } from 'chai';
 
 describe('storage.unit.test', () => {
     it('should put chain config', () => {
         setChainConfig({
-            logMonitor: () => true
+            logMonitor: () => true,
+            plugins: { name: 'sample' }
         });
+        expect(getPlugins()).to.be.not.undefined;
+        expect(getPlugins().name).to.be.equal('sample');
         expect(getLogMonitor()()).to.be.true;
     })
     it('should put and get chain in storage', () => {

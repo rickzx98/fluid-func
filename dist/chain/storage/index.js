@@ -19,16 +19,17 @@ exports.getStorage = getStorage;
 exports.isExists = isExists;
 exports.setChainConfig = setChainConfig;
 exports.getLogMonitor = getLogMonitor;
+exports.getPlugins = getPlugins;
 
 var _get = require('./get');
 
 var _put = require('./put');
 
+var _constants = require('./constants');
+
 var _exists = require('./exists');
 
 var _Util = require('../Util');
-
-var _constants = require('./constants');
 
 if (global && !global.__$fs__) {
     global.__$fs__ = {};
@@ -119,4 +120,8 @@ function setChainConfig(config) {
 
 function getLogMonitor() {
     return (0, _get.getLogMonitor)(_constants.CHAIN_CONFIG, storage);
+}
+
+function getPlugins() {
+    return (0, _get.getPlugins)(_constants.CHAIN_CONFIG, storage);
 }

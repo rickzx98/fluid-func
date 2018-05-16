@@ -11,6 +11,8 @@ var _storage = require('../storage/');
 
 var _getLogger = require('./getLogger');
 
+var _getPlugins = require('./getPlugins');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Configutrator = function () {
@@ -23,6 +25,7 @@ var Configutrator = function () {
         value: function configure(props) {
             var config = {};
             (0, _getLogger.getLogger)(config, props);
+            (0, _getPlugins.getPlugins)(config, props, (0, _storage.getPlugins)());
             (0, _storage.setChainConfig)(config);
         }
     }]);

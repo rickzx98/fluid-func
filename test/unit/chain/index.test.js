@@ -1,11 +1,51 @@
 import 'babel-polyfill';
 
-import {Chain} from '../../../src/chain/';
+import { Chain } from '../../../src/chain/';
 import chai from 'chai';
 
 const expect = chai.expect;
 
 describe('Chain unit test', () => {
+    it('should run after plugin', done => {
+        Chain.config({
+            plugins: [
+                {
+                    name: 'Sample1',
+                    action: () => {
+                        return { something: 'nice' };
+                    },
+                    after: ['chainBefore2']
+                }
+            ]
+        });
+        Chain.create('chainBefore2').onStart((context) => {
+            expect(context.Sample1).to.be.undefined;
+        }).connect('chainBefore3').onStart((context) => {
+            expect(context.Sample1).to.be.not.undefined;
+            expect(context.Sample1('something')).to.be.equal('nice');
+        }).execute({ main: 'lo' }).then(() => {
+            done();
+        }).catch(err => { console.error(err) });
+    });
+    it('should run before plugin', done => {
+        Chain.config({
+            plugins: [
+                {
+                    name: 'Sample1',
+                    action: () => {
+                        return { something: 'nice' };
+                    },
+                    before: ['chainBefore1']
+                }
+            ]
+        });
+        Chain.create('chainBefore1').onStart((context) => {
+            expect(context.Sample1).to.be.not.undefined;
+            expect(context.Sample1('something')).to.be.equal('nice');
+        }).execute({ main: 'lo' }).then(() => {
+            done();
+        }).catch(err => { console.error(err) });
+    });
     it('should not be allowed to start if name is undefined', () => {
         expect(Chain.start(undefined)).to.be.undefined;
     });
@@ -67,7 +107,7 @@ describe('Chain unit test', () => {
             return context;
         });
 
-        Chain.start('SampleChain1', {hi: 'initParam'})
+        Chain.start('SampleChain1', { hi: 'initParam' })
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -95,7 +135,7 @@ describe('Chain unit test', () => {
             });
         });
 
-        Chain.start('SampleChain2', {hi: 'initParam'})
+        Chain.start('SampleChain2', { hi: 'initParam' })
             .then(result => {
                 expect(result.hello()).to.be.equal('world!');
                 expect(result.fromParam()).to.be.equal('initParam');
@@ -139,8 +179,8 @@ describe('Chain unit test', () => {
                 expect(result._3rd()).to.be.equal('1st - 2nd - 3rd');
                 done();
             }).catch(() => {
-            done();
-        });
+                done();
+            });
     });
 
     it('executes chain with reducer', done => {
@@ -148,7 +188,7 @@ describe('Chain unit test', () => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
 
-        Chain.start('SampleChainReducer', {sampleArray: [1, 2, 3, 4, 5]})
+        Chain.start('SampleChainReducer', { sampleArray: [1, 2, 3, 4, 5] })
             .then(result => {
                 expect(result.value()).to.be.equal(15);
                 done();
@@ -161,9 +201,9 @@ describe('Chain unit test', () => {
             return current + (parameter.value ? parameter.value() : 0);
         }).reduce('sampleArray');
         new Chain('SampleChain7', (parameter) => {
-            return {sum: 5 + parameter.value()};
+            return { sum: 5 + parameter.value() };
         });
-        Chain.start(['SampleChainReducer1', 'SampleChain7'], {sampleArray: [1, 2, 3, 4, 5]})
+        Chain.start(['SampleChainReducer1', 'SampleChain7'], { sampleArray: [1, 2, 3, 4, 5] })
             .then(result => {
                 expect(result.sum()).to.be.equal(20);
                 done();
@@ -258,8 +298,8 @@ describe('Chain unit test', () => {
                     }
                 });
             }
-        }).spec('sample2', {require: true});
-        Chain.start('SampleChain12', {value: 'false'}).catch(status => {
+        }).spec('sample2', { require: true });
+        Chain.start('SampleChain12', { value: 'false' }).catch(status => {
             expect(status.error.length).to.be.equal(2);
             expect(status.error[0].field).to.be.equal('sample');
             expect(status.error[0].error.message).to.be.equal('Value should be sample');
@@ -319,9 +359,9 @@ describe('Chain unit test', () => {
                 expect(ifIStarted).to.be.false;
                 done();
             }).catch(err => {
-            console.log(err);
-            done();
-        });
+                console.log(err);
+                done();
+            });
     });
 
     it('should trigger onFail function is a chain has failed', done => {

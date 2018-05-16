@@ -1,6 +1,8 @@
 export class Runner {
     constructor(getChain, generateUUID, Context, SingleChain, ArrayChain, Reducer, Util,
-                createExecutionStack, addChainToStack, deleteStack, cache, logInfo, logError) {
+        createExecutionStack, addChainToStack,
+        deleteStack, cache, logInfo, logError,
+        executeAfter, executeBefore) {
         this.getChain = getChain;
         this.generateUUID = generateUUID;
         this.Context = Context;
@@ -14,6 +16,8 @@ export class Runner {
         this.cache = cache;
         this.logInfo = logInfo;
         this.logError = logError;
+        this.executeAfter = executeAfter;
+        this.executeBefore = executeBefore;
     }
 
     start(param, chains) {
@@ -27,7 +31,8 @@ export class Runner {
                     new this.SingleChain(this.getChain,
                         this.Context, propertyToContext, this.Reducer,
                         this.addChainToStack, stackId, this.cache,
-                        this.logInfo, this.logError)
+                        this.logInfo, this.logError,
+                        this.executeAfter, this.executeBefore)
                 ).start(newParam, chains)
                     .then(result => {
                         return new Promise((resolve, reject) => {
@@ -57,7 +62,8 @@ export class Runner {
                 return new this.SingleChain(this.getChain,
                     this.Context, propertyToContext, this.Reducer,
                     this.addChainToStack, stackId, this.cache,
-                    this.logInfo, this.logError)
+                    this.logInfo, this.logError,
+                    this.executeAfter, this.executeBefore)
                     .start(newParam, chains)
                     .then(result => {
                         return new Promise((resolve, reject) => {

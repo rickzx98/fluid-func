@@ -1,9 +1,11 @@
-import {CHAIN_CONFIG} from "./constants";
+import { CHAIN_CONFIG } from "./constants";
+import { generateUUID } from '../Util';
 
 const GET_CHAIN_METHOD = 'GET_CHAIN_PLUGIN';
 const GET_CHAIN_CONTEXT_METHOD = 'GET_CHAIN_CONTEXT_PLUGIN';
 const GET_CHAIN_CONFIG_LOG_MONITOR = 'logMonitor';
-import {generateUUID} from '../Util';
+const GET_CHAIN_CONFIG_PLUGINS = 'plugins';
+
 
 /**
  * Gets the chain instance from storage
@@ -82,3 +84,8 @@ class GetChainTypeException extends Error {
 export const getLogMonitor = (chainConfig, storage) => {
     return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] ? storage[chainConfig][GET_CHAIN_CONFIG_LOG_MONITOR] : () => false;
 };
+
+export const getPlugins = (chainConfig, storage) => {
+    return storage[chainConfig] && storage[chainConfig][GET_CHAIN_CONFIG_PLUGINS] ? storage[chainConfig][GET_CHAIN_CONFIG_PLUGINS] : undefined;
+};
+

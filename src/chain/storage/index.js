@@ -15,99 +15,131 @@ import { CHAIN_CONFIG } from './constants';
 import { exists } from './exists';
 import { generateUUID } from '../Util';
 
+const STORE_ID = generateUUID();
+const defaultStorage = {
+    __$store: (id) => []
+};
+
 if (global && !global.__$fs__) {
-    global.__$fs__ = {};
+    global.__$fs__ = defaultStorage;
 }
 else if (window && !window.__$fs__) {
-    window.__$fs__ = {};
+    window.__$fs__ = defaultStorage;
 }
 
 const storage = global.__$fs__ || window.__$fs__;
 
 export function getChain(name) {
-    return gc(storage, name);
+    return gc(getData(), name);
 }
 
 export function getChainContext(chainId, field) {
-    return gcc(storage, chainId, field);
+    return gcc(getData(), chainId, field);
 }
 
 export function putChain(name, chain) {
-    pc(storage, exists, name, chain);
+    const data = getData();
+    pc(data, exists, name, chain);
+    setData(data);
 }
 
 export function putChainContext(chainId, field, value) {
-    pcc(storage, chainId, field, value);
+    const data = getData();
+    pcc(data, chainId, field, value);
+    setData(data);
 }
 
 export function getChainDataById(chainId) {
-    return gcdbi(storage, chainId);
+    return gcdbi(getData(), chainId);
 }
 
 export function createExecutionStack() {
+    const data = getData();
     const stackId = generateUUID();
-    storage[stackId] = {
+    data[stackId] = {
         type: 'execution',
         chains: []
     };
+    setData(data);
     return stackId;
 }
 
 export function addChainToStack(stackId, chainId) {
-    storage[stackId].chains.push(chainId);
+    const data = getData();
+    data[stackId].chains.push(chainId);
+    setData(data);
 }
 
 export function cacheChainAction(stackId, chainId, param, result) {
-    storage[stackId][chainId] = {};
-    storage[stackId][chainId][JSON.stringify(param)] = {
+    const data = getData();
+    data[stackId][chainId] = {};
+    data[stackId][chainId][JSON.stringify(param)] = {
         result,
         timestamp: new Date().getTime()
     };
+    setData(data);
 }
 
 export function hasCached(stackId, chainId, param) {
-    return storage[stackId][chainId] && storage[stackId][chainId][JSON.stringify(param)];
+    const data = getData();
+    return data[stackId][chainId] && data[stackId][chainId][JSON.stringify(param)];
 }
 
 export function getCachedChainAction(stackId, chainId, param) {
-    return storage[stackId][chainId][JSON.stringify(param)];
+    return getData()[stackId][chainId][JSON.stringify(param)];
 }
 
 export function clearCache(stackId, chainId) {
-    delete storage[stackId][chainId];
+    const data = getData();
+    delete data[stackId][chainId];
+    setData(data);
 }
 
 export function deleteStack(stackId) {
-    const stack = storage[stackId];
+    const data = getData();
+    const stack = data[stackId];
     stack.chains.forEach(chainId => {
-        const chain = storage[chainId];
+        const chain = data[chainId];
         for (let field in chain) {
             if (chain.hasOwnProperty(field)) {
                 delete chain[field];
             }
         }
-        delete storage[chainId];
+        delete data[chainId];
     });
-    delete storage[stackId];
+    delete data[stackId];
+    setData(data);
 }
 
-
 export function getStorage() {
-    return Object.freeze(storage);
+    return Object.freeze(getData());
 }
 
 export function isExists(name) {
-    return exists(storage, name);
+    return exists(getData(), name);
 }
 
 export function setChainConfig(config) {
-    _setChainConfig(CHAIN_CONFIG, storage, config);
+    const data = getData();
+    _setChainConfig(CHAIN_CONFIG, data, config);
+    setData(data);
 }
 
 export function getLogMonitor() {
-    return _getLogMonitor(CHAIN_CONFIG, storage);
+    return _getLogMonitor(CHAIN_CONFIG, getData());
 }
 
 export function getPlugins() {
-    return _getPlugins(CHAIN_CONFIG, storage);
+    return _getPlugins(CHAIN_CONFIG, getData());
+}
+function getData() {
+    return storage.__$store(STORE_ID);
+}
+function setData(data) {
+    storage.__$store = (id) => {
+        if (id !== STORE_ID) {
+            throw new Errow('Unauthorized storage access');
+        }
+        return data;
+    }
 }

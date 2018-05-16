@@ -539,7 +539,8 @@ before/after | array    | list of Func names the action will invoke to before/af
 ```javascript
     FluidFunc.config({
         plugins: [
-            {name:'AwesomePlugin', 
+            {
+            name:'AwesomePlugin', 
             action: function(context) {
                 return "hello";
             },
@@ -549,16 +550,14 @@ before/after | array    | list of Func names the action will invoke to before/af
         ]
     });
 
-    FluidFunc.create('Func1').onStart(context=> {
-        // plugin was triggered before Func1
-        context.AwesomePlugin() // hello
+    FluidFunc.create('Func1').onStart(function(parameter){
+        parameter.AwesomePlugin() // hello
     });
 
-    FluidFunc.create('Func2').onStart(context=> {
-    })
-    .execute(context=> { 
+    FluidFunc.create('Func2').onStart(function(){})
+    .execute(result => { 
         // plugin was triggered after Func2
-        context.AwesomePlugin() // hello
+        result.AwesomePlugin() // hello
     });
 
 ```

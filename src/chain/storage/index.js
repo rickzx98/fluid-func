@@ -138,7 +138,7 @@ function getData() {
 function setData(data) {
     storage.__$store = (id) => {
         if (id !== STORE_ID) {
-            throw new Errow('Unauthorized storage access');
+            throw new Error('Unauthorized storage access');
         }
         return data;
     }

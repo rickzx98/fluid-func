@@ -1,6 +1,6 @@
 {
     "name": "fluid-func",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "description": "A way to write your code with functional programming in mind.",
     "main": "dist/index.js",
     "scripts": {
@@ -49,8 +49,5 @@
         "mocha": "^3.4.1",
         "sinon": "^2.2.0",
         "babel-polyfill": "^6.23.0"
-    },
-    "dependencies": {
-        "npm": "^6.0.1"
     }
 }

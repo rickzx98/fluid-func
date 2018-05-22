@@ -26,6 +26,7 @@ export class SingleChain {
                     this.addChainToStack(this.stackId, chain.$chainId);
                     const paramAsContext = new this.Context(initialParam.$chainId());
                     addSpecToContext(chain.specs, paramAsContext);
+                    addInitialParam(initialParam, paramAsContext);
                     paramAsContext.runSpecs().then(() => {
                         let param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                         this.executeBefore(chain.func, param)
@@ -171,7 +172,11 @@ const convertParamFromSpec = (param, chainInstance) => {
     }
     return newParam;
 };
-
+const addInitialParam = (initialParam, context) => {
+    Object.keys(initialParam).forEach(field => {
+        context.set(field, initialParam[field]());
+    });
+};
 const addSpecToContext = (specs, context) => {
     if (specs) {
         specs.forEach(spec => {

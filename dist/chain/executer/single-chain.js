@@ -42,6 +42,7 @@ var SingleChain = exports.SingleChain = function () {
                         _this.addChainToStack(_this.stackId, chain.$chainId);
                         var paramAsContext = new _this.Context(initialParam.$chainId());
                         addSpecToContext(chain.specs, paramAsContext);
+                        addInitialParam(initialParam, paramAsContext);
                         paramAsContext.runSpecs().then(function () {
                             var param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
                             _this.executeBefore(chain.func, param).then(function (resolvedPluginData) {
@@ -184,7 +185,11 @@ var convertParamFromSpec = function convertParamFromSpec(param, chainInstance) {
     }
     return newParam;
 };
-
+var addInitialParam = function addInitialParam(initialParam, context) {
+    Object.keys(initialParam).forEach(function (field) {
+        context.set(field, initialParam[field]());
+    });
+};
 var addSpecToContext = function addSpecToContext(specs, context) {
     if (specs) {
         specs.forEach(function (spec) {

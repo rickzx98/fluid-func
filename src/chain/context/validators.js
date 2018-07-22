@@ -1,17 +1,18 @@
 const VALIDATORS = '$$$validators';
 export class Validators {
     constructor(chainId, getChainContext, CollectPromiseResult) {
-        const validators = getChainContext(chainId, VALIDATORS);
-        this.fieldSpecs = validators ? validators() : [];
+        this.chainId = chainId;
+        this.getChainContext = getChainContext;
         this.CollectPromiseResult = CollectPromiseResult;
     }
     addSpec(fieldSpec, setChainContextValue) {
-        const validators = Object.assign([], [...this.fieldSpecs, fieldSpec]);
+        const old_validators = this.getChainContext(this.chainId, VALIDATORS);
+        const validators = Object.assign([], [...(old_validators ? old_validators() : []), fieldSpec]);
         setChainContextValue(VALIDATORS, validators);
     }
-
     runValidations(context) {
-        const validators = this.fieldSpecs.map(validator => validator.runValidation(context));
+        const _validators = this.getChainContext(this.chainId, VALIDATORS) ? this.getChainContext(this.chainId, VALIDATORS)() : [];
+        const validators = _validators.map(validator => validator.runValidation(context));
         return new Promise((resolve, reject) => {
             new this.CollectPromiseResult(validators)
                 .collect((result) => {
@@ -23,9 +24,9 @@ export class Validators {
                 })
         });
     }
-
     runSpecs(context) {
-        const validators = this.fieldSpecs
+        const _validators = this.getChainContext(this.chainId, VALIDATORS) ? this.getChainContext(this.chainId, VALIDATORS)() : [];
+        const validators = _validators
             .map(validator => {
                 const promises = validator.actions.map(
                     action => {

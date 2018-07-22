@@ -6,7 +6,28 @@ import chai from "chai";
 const expect = chai.expect;
 
 describe("Chain unit test", () => {
-    it("should be able to get root paramaters througout the chains", done => {
+    it("should get default spec throughout the chains", done => {
+        Chain.create("_thr_chain_0_1")
+            .onStart((param) => {
+                expect(param.port).to.be.not.undefined;
+                expect(param.port()).to.be.equal(1000);
+            })
+            .spec("port", { default: 1000 });
+
+        Chain.create("_thr_chain_0_2")
+            .onStart(param => {
+                expect(param.sample_port).to.be.not.undefined;
+                expect(param.sample_port()).to.be.equal(2000);
+            })
+            .spec("sample_port", { default: 2000 });
+
+        Chain.start(["_thr_chain_0_1", "_thr_chain_0_2"]).then(() => {
+            done();
+        }).catch(error => {
+           console.error(error);
+        });
+    });
+    it("should be able to get root paramaters throuhgout the chains", done => {
         Chain.create("_thru_chain1").onStart((params) => {
             expect(params.config).to.be.not.undefined;
             expect(params.config()).to.be.equal("hello");

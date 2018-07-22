@@ -28,7 +28,8 @@ export class SingleChain {
                     addSpecToContext(chain.specs, paramAsContext);
                     addInitialParam(initialParam, paramAsContext);
                     paramAsContext.runSpecs().then(() => {
-                        let param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
+                        const initialData = paramAsContext.getData();
+                        let param = convertParamFromSpec(Object.assign(initialParam, initialData), chain);
                         this.executeBefore(chain.func, param)
                             .then(resolvedPluginData => {
                                 if (resolvedPluginData) {
@@ -174,7 +175,9 @@ const convertParamFromSpec = (param, chainInstance) => {
 };
 const addInitialParam = (initialParam, context) => {
     Object.keys(initialParam).forEach(field => {
-        context.set(field, initialParam[field]());
+        if (field !== "$chainId" && field !== "$$$validators") {
+            context.set(field, initialParam[field]());
+        }
     });
 };
 const addSpecToContext = (specs, context) => {

@@ -44,7 +44,8 @@ var SingleChain = exports.SingleChain = function () {
                         addSpecToContext(chain.specs, paramAsContext);
                         addInitialParam(initialParam, paramAsContext);
                         paramAsContext.runSpecs().then(function () {
-                            var param = convertParamFromSpec(Object.assign(initialParam, paramAsContext.getData()), chain);
+                            var initialData = paramAsContext.getData();
+                            var param = convertParamFromSpec(Object.assign(initialParam, initialData), chain);
                             _this.executeBefore(chain.func, param).then(function (resolvedPluginData) {
                                 if (resolvedPluginData) {
                                     var newContext = new _this.Context('_before_temp');
@@ -187,7 +188,9 @@ var convertParamFromSpec = function convertParamFromSpec(param, chainInstance) {
 };
 var addInitialParam = function addInitialParam(initialParam, context) {
     Object.keys(initialParam).forEach(function (field) {
-        context.set(field, initialParam[field]());
+        if (field !== "$chainId" && field !== "$$$validators") {
+            context.set(field, initialParam[field]());
+        }
     });
 };
 var addSpecToContext = function addSpecToContext(specs, context) {

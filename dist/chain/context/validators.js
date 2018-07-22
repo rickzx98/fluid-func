@@ -16,15 +16,16 @@ var Validators = exports.Validators = function () {
     function Validators(chainId, getChainContext, CollectPromiseResult) {
         _classCallCheck(this, Validators);
 
-        var validators = getChainContext(chainId, VALIDATORS);
-        this.fieldSpecs = validators ? validators() : [];
+        this.chainId = chainId;
+        this.getChainContext = getChainContext;
         this.CollectPromiseResult = CollectPromiseResult;
     }
 
     _createClass(Validators, [{
         key: 'addSpec',
         value: function addSpec(fieldSpec, setChainContextValue) {
-            var validators = Object.assign([], [].concat(_toConsumableArray(this.fieldSpecs), [fieldSpec]));
+            var old_validators = this.getChainContext(this.chainId, VALIDATORS);
+            var validators = Object.assign([], [].concat(_toConsumableArray(old_validators ? old_validators() : []), [fieldSpec]));
             setChainContextValue(VALIDATORS, validators);
         }
     }, {
@@ -32,7 +33,8 @@ var Validators = exports.Validators = function () {
         value: function runValidations(context) {
             var _this = this;
 
-            var validators = this.fieldSpecs.map(function (validator) {
+            var _validators = this.getChainContext(this.chainId, VALIDATORS) ? this.getChainContext(this.chainId, VALIDATORS)() : [];
+            var validators = _validators.map(function (validator) {
                 return validator.runValidation(context);
             });
             return new Promise(function (resolve, reject) {
@@ -50,7 +52,8 @@ var Validators = exports.Validators = function () {
         value: function runSpecs(context) {
             var _this2 = this;
 
-            var validators = this.fieldSpecs.map(function (validator) {
+            var _validators = this.getChainContext(this.chainId, VALIDATORS) ? this.getChainContext(this.chainId, VALIDATORS)() : [];
+            var validators = _validators.map(function (validator) {
                 var promises = validator.actions.map(function (action) {
                     switch (action) {
                         case 'require':

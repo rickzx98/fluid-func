@@ -28,7 +28,10 @@ var Defaults = exports.Defaults = function () {
             return new Promise(function (resolve, reject) {
                 new _this.SpecFailedException(function () {
                     try {
-                        _this.context.set(_this.field, defaultValue);
+                        var currentData = _this.context.getData();
+                        if (currentData[_this.field] === undefined || currentData[_this.field]() === undefined) {
+                            _this.context.set(_this.field, defaultValue);
+                        }
                         resolve();
                     } catch (err) {
                         reject({ error: err, field: _this.field });

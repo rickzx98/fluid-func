@@ -24,7 +24,7 @@ describe("Chain unit test", () => {
         Chain.start(["_thr_chain_0_1", "_thr_chain_0_2"]).then(() => {
             done();
         }).catch(error => {
-           console.error(error);
+            console.error(error);
         });
     });
     it("should be able to get root paramaters throuhgout the chains", done => {
@@ -33,7 +33,7 @@ describe("Chain unit test", () => {
             expect(params.config()).to.be.equal("hello");
             expect(params.ignoreMe).to.be.not.undefined;
             expect(params.ignoreMe()).to.be.equal("ignored");
-        }).spec("config", { require: true });
+        }).spec("config", { require: true, default: "defaultConfig" });
         Chain.create("_thru_chain2").onStart((params) => {
             expect(params.ignoreMe).to.be.undefined;
             expect(params.config()).to.be.equal("hello");
@@ -45,17 +45,27 @@ describe("Chain unit test", () => {
             expect(params.config).to.be.not.undefined;
         }).strict().spec("config", { require: true });
         Chain.create("_thru_chain4").onStart((params) => {
+            expect(params.newValue).to.be.not.undefined;
             expect(params.config).to.be.not.undefined;
             expect(params.config()).to.be.equal("hello");
             expect(params.ignoreMe).to.be.not.undefined;
             expect(params.ignoreMe()).to.be.equal("ignored");
-        }).spec("config", { require: true });
+        }).spec("config", {
+            require: true, translate: (value, context) => new Promise((resolve) => {
+                context.set("newValue", value);
+                resolve();
+            })
+        });
         Chain.create("_thru_chain5").onStart((params) => {
             expect(params.config).to.be.not.undefined;
-            expect(params.config()).to.be.equal("hello");
+            expect(params.config()).to.be.equal("hi");
             expect(params.ignoreMe).to.be.not.undefined;
             expect(params.ignoreMe()).to.be.equal("ignored");
-        }).spec("config", { require: true });
+        }).spec("config", {
+            require: true, transform: (value) => new Promise((resolve) => {
+                resolve("hi");
+            })
+        });
 
         Chain.start(["_thru_chain1", "_thru_chain2", "_thru_chain3", "_thru_chain4", "_thru_chain5"], {
             config: "hello",

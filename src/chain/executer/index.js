@@ -6,7 +6,7 @@ import { ArrayChain } from './array-chain';
 import Context from '../context/';
 import { Reducer } from './reducer';
 import { Runner } from './runner';
-import { SingleChain } from './single-chain';
+import StartChain from "./SingleChain/StartChain";
 import { Util } from './util';
 import { cache } from '../cache/';
 import { generateUUID } from '../Util';
@@ -14,7 +14,7 @@ import { generateUUID } from '../Util';
 export class Executer {
     start(param, chains) {
         return new Runner(getChain, generateUUID, Context,
-            SingleChain, ArrayChain,
+            StartChain, ArrayChain,
             Reducer, Util,
             createExecutionStack,
             addChainToStack,

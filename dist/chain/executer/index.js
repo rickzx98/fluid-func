@@ -23,7 +23,9 @@ var _reducer = require('./reducer');
 
 var _runner = require('./runner');
 
-var _singleChain = require('./single-chain');
+var _StartChain = require('./SingleChain/StartChain');
+
+var _StartChain2 = _interopRequireDefault(_StartChain);
 
 var _util = require('./util');
 
@@ -43,7 +45,7 @@ var Executer = exports.Executer = function () {
     _createClass(Executer, [{
         key: 'start',
         value: function start(param, chains) {
-            return new _runner.Runner(_storage.getChain, _Util.generateUUID, _context2.default, _singleChain.SingleChain, _arrayChain.ArrayChain, _reducer.Reducer, _util.Util, _storage.createExecutionStack, _storage.addChainToStack, _storage.deleteStack, _cache.cache, _logger.logInfo, _logger.logError, _plugins.executeAfter, _plugins.executeBefore).start(param, chains);
+            return new _runner.Runner(_storage.getChain, _Util.generateUUID, _context2.default, _StartChain2.default, _arrayChain.ArrayChain, _reducer.Reducer, _util.Util, _storage.createExecutionStack, _storage.addChainToStack, _storage.deleteStack, _cache.cache, _logger.logInfo, _logger.logError, _plugins.executeAfter, _plugins.executeBefore).start(param, chains);
         }
     }]);
 

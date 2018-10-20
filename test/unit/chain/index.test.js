@@ -6,6 +6,30 @@ import chai from "chai";
 const expect = chai.expect;
 
 describe("Chain unit test", () => {
+    it.only("should use existing func in connect", done => {
+        Chain.create("sample_connect_0")
+            .onStart(({ value }) => value() + 1);
+        Chain.create("sample_connect_2")
+            .onStart(({ value }) => value() + 2);
+        Chain.create("sample_connect_3")
+            .onStart(({ value }) => value() + 3);
+
+        Chain.create("connectEverything")
+            .onStart(({ sum }) => sum())
+            .connect("sample_connect_0")
+            .connect("sample_connect_2")
+            .connect("sample_connect_3")
+            .execute({ sum: 1 })
+            .then(({ value }) => {
+                expect(value()).to.be.equal(7);
+                done();
+            }).
+            catch(err => {
+                console.log("error", err);
+                done()
+            });
+    });
+
     it("should get default spec throughout the chains", done => {
         Chain.create("_thr_chain_0_1")
             .onStart((param) => {

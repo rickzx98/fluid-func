@@ -1,5 +1,5 @@
-import {isExists, putChain} from './storage/';
-import {Executer} from './executer/';
+import { isExists, putChain } from './storage/';
+import { Executer } from './executer/';
 import Spec from './spec/';
 import Configurator from './configurator/';
 
@@ -26,8 +26,11 @@ export class Chain {
 
     connect(name) {
         this.sequence.push(name);
-        return new Chain(name, () => {
-        }, this.sequence);
+        if (!Chain.exists(name)) {
+            return new Chain(name, () => {
+            }, this.sequence);
+        }
+        return this;
     }
 
     reduce(field) {

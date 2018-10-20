@@ -46,7 +46,10 @@ var Chain = function () {
         key: 'connect',
         value: function connect(name) {
             this.sequence.push(name);
-            return new Chain(name, function () {}, this.sequence);
+            if (!Chain.exists(name)) {
+                return new Chain(name, function () {}, this.sequence);
+            }
+            return this;
         }
     }, {
         key: 'reduce',

@@ -6,7 +6,7 @@ import chai from "chai";
 const expect = chai.expect;
 
 describe("Chain unit test", () => {
-    it.only("should use existing func in connect", done => {
+    it("should use existing func in connect", done => {
         Chain.create("sample_connect_0")
             .onStart(({ value }) => value() + 1);
         Chain.create("sample_connect_2")

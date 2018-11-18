@@ -37,14 +37,7 @@ var defaultStorage = {
         return [];
     }
 };
-
-if (global && !global.__$fs__) {
-    global.__$fs__ = defaultStorage;
-} else if (window && !window.__$fs__) {
-    window.__$fs__ = defaultStorage;
-}
-
-var storage = global.__$fs__ || window.__$fs__;
+var storage = defaultStorage;
 
 function getChain(name) {
     return (0, _get.getChain)(getData(), name);

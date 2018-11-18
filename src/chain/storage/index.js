@@ -19,15 +19,7 @@ const STORE_ID = generateUUID();
 const defaultStorage = {
     __$store: (id) => []
 };
-
-if (global && !global.__$fs__) {
-    global.__$fs__ = defaultStorage;
-}
-else if (window && !window.__$fs__) {
-    window.__$fs__ = defaultStorage;
-}
-
-const storage = global.__$fs__ || window.__$fs__;
+var storage = defaultStorage;
 
 export function getChain(name) {
     return gc(getData(), name);
